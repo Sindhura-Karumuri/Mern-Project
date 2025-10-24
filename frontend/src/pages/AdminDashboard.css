@@ -1,0 +1,107 @@
+/* ---------- Page Container ---------- */
+.admin-dashboard-container {
+  display: flex;
+  justify-content: center; /* center horizontally */
+  align-items: flex-start; /* top-align vertically */
+  min-height: 100vh;
+  background-color: #fdf6f0; /* soft pastel beige */
+  padding: 2rem 2rem;
+}
+
+/* ---------- Centered Pink Box (Full Width) ---------- */
+.admin-dashboard-box {
+  background-color: #ffd6e0; /* pastel pink box */
+  border-radius: 1.25rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1600px; /* wider container */
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- Header ---------- */
+.admin-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #6b5b95; /* pastel purple */
+}
+
+.admin-header .user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-header .logout-btn {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #e8b8ba, #fad0c4);
+  color: #333;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-header .logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ---------- Section Titles ---------- */
+.section-title {
+  font-weight: 700;
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  color: #6b5b95;
+  text-align: center;
+}
+
+/* ---------- Grid Layout ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  justify-items: center; /* center grid items */
+  width: 100%;
+}
+
+/* ---------- Grid Cards (Admin Components) ---------- */
+.grid > * {
+  background-color: #fef1f5; /* pastel pink */
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 350px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.grid > *:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* Pastel variations for grid cards */
+.grid > :nth-child(1) { background-color: #ffe5d9; } /* light peach */
+.grid > :nth-child(2) { background-color: #e0f7fa; } /* light cyan */
+.grid > :nth-child(3) { background-color: #f3e5f5; } /* light lavender */
+.grid > :nth-child(4) { background-color: #fff9c4; } /* light yellow */
+
+/* ---------- Loading Text ---------- */
+.loading-text {
+  text-align: center;
+  font-style: italic;
+  color: #555;
+  margin-top: 2rem;
+}

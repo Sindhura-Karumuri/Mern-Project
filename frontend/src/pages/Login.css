@@ -1,0 +1,154 @@
+/* ---------- Page Container ---------- */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #fdf6f0; /* pastel beige background */
+  padding: 1rem;
+  transition: background-color 0.5s;
+}
+
+/* Dark mode background */
+.login-container.dark {
+  background-color: #1f2937; /* dark gray */
+}
+
+/* ---------- Login Card ---------- */
+.login-card {
+  background-color: #ffffff; /* white card */
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s, background-color 0.5s;
+}
+
+.login-card:hover {
+  box-shadow: 0 12px 36px rgba(0,0,0,0.15);
+}
+
+/* Dark mode card */
+.login-card.dark {
+  background-color: #2d3748; /* dark card */
+}
+
+/* ---------- Heading ---------- */
+.login-card h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #6b5b95; /* pastel purple */
+  text-align: center;
+}
+
+.login-card.dark h2 {
+  color: #e2e8f0; /* light text for dark mode */
+}
+
+/* ---------- Error Message ---------- */
+.login-error {
+  background-color: #ffe5e5;
+  color: #c53030;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.login-error.dark {
+  background-color: #742a2a;
+  color: #fbdada;
+}
+
+/* ---------- Input Fields ---------- */
+.login-card input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  background-color: #fef1f5; /* pastel pink inputs */
+  color: #111827;
+  font-size: 1rem;
+  transition: border 0.3s, background-color 0.3s;
+}
+
+.login-card input:focus {
+  outline: none;
+  border-color: #6b5b95; /* pastel purple focus */
+  box-shadow: 0 0 0 3px rgba(107, 91, 149, 0.2);
+}
+
+.login-card.dark input {
+  background-color: #4a5568; /* dark input bg */
+  border-color: #718096;
+  color: #edf2f7;
+}
+
+/* ---------- Submit Button ---------- */
+.login-card button[type="submit"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #6b5b95; /* pastel purple button */
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.login-card button[type="submit"]:hover {
+  background-color: #5a4a7e;
+  transform: translateY(-2px);
+}
+
+.login-card button[type="submit"]:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+/* ---------- Divider ---------- */
+.login-card hr {
+  border: none;
+  border-top: 1px solid #d1d5db;
+  margin: 1.5rem 0;
+}
+
+/* ---------- Toggle Signup/Login Button ---------- */
+.toggle-auth {
+  width: 100%;
+  text-align: center;
+  color: #6b5b95;
+  cursor: pointer;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  font-size: 0.95rem;
+  transition: color 0.3s;
+}
+
+.toggle-auth:hover {
+  color: #5a4a7e;
+}
+
+.toggle-auth.dark {
+  color: #d6bcfa;
+}
+
+.toggle-auth.dark:hover {
+  color: #b794f4;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+
+  .login-card h2 {
+    font-size: 1.5rem;
+  }
+}

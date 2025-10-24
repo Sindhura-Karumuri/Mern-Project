@@ -1,0 +1,130 @@
+/* Container */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card Styles */
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+  color: #333;
+  font-weight: 600;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Images */
+.card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Card Content */
+.card-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.card-content h5 {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-content p {
+  font-size: 0.875rem;
+  margin: 0.2rem 0;
+}
+
+.price {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.duration {
+  font-size: 0.875rem;
+  color: #555;
+}
+
+/* Button */
+.btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ffb3ba, #ffdfba); /* pastel gradient */
+  color: #333;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* Disabled button */
+.btn:disabled {
+  background: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-subtitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 2rem 0 1.5rem;
+}
+
+/* Loading Text */
+.loading-text {
+  text-align: center;
+  font-style: italic;
+  color: #555;
+}
+
+/* Pastel Colors for Cards */
+.card:nth-child(4n+1) { background-color: #ffd1dc; } /* pastel pink */
+.card:nth-child(4n+2) { background-color: #d1ffd6; } /* pastel green */
+.card:nth-child(4n+3) { background-color: #d1e0ff; } /* pastel blue */
+.card:nth-child(4n+4) { background-color: #fff0d1; } /* pastel yellow */
+
+/* Dark Mode Override */
+@media (prefers-color-scheme: dark) {
+  .loading-text { color: #aaa; }
+}
