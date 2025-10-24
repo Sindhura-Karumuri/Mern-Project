@@ -33,7 +33,6 @@ export default function AdminDashboard() {
             <AdminSummary />
           </div>
         </div>
-
         {/* Plans Management */}
         <div className="section mb-10">
           <h2 className="section-title">Plans Management</h2>
