@@ -23,10 +23,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Static folder for uploaded images
+// Serve static folder for uploaded images
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // serves /uploads
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // API Routes
 app.use("/api/auth", authRoutes);
@@ -34,19 +34,21 @@ app.use("/api/menu", menuRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/plans", planRoutes);
-app.use("/api/upload", uploadRoutes); 
+app.use("/api/upload", uploadRoutes);
 
 // Admin & Dashboard
-app.use("/api/admin", adminRoutes);        // general admin routes
-app.use("/api/admin/dashboard", dashboardRoutes); // summary/dashboard routes
+app.use("/api/admin", adminRoutes);
+app.use("/api/admin/dashboard", dashboardRoutes);
 
 // Root route
 app.get("/", (req, res) => {
   res.send("✅ MERN Canteen API running with MongoDB");
 });
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+// MongoDB connection
+const dbUri = process.env.ATLAS_URI || process.env.MONGO_URI;
+
+mongoose.connect(dbUri)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB connection error:", err));
 
