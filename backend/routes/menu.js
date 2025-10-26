@@ -1,9 +1,15 @@
-const express = require("express");
+import express from "express";
+import MenuItem from "../models/MenuItem.js";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+
+// Fix __dirname for ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const router = express.Router();
-const MenuItem = require("../models/MenuItem");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 
 // Multer storage
 const storage = multer.diskStorage({
@@ -87,4 +93,4 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

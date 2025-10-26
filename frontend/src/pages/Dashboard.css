@@ -66,6 +66,7 @@
   font-size: 1.4rem;
   margin-bottom: 1rem;
   color: #34495e;
+  text-align: center;
 }
 
 /* ---------- Grid Layout ---------- */
@@ -74,37 +75,49 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
   justify-items: center;
+  align-items: stretch; /* all cards same height */
 }
 
 /* ---------- Card Styles ---------- */
 .card {
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
-  border-radius: 1rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   width: 100%;
   max-width: 360px;
+  border-radius: 1rem;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   transition: transform 0.3s, box-shadow 0.3s, background-color 0.5s;
+  height: 100%; /* ensure equal heights */
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
-/* Dark mode cards */
 .dark-mode .card {
   background-color: #2d3748;
   color: #f0f0f5;
 }
 
-/* Card Content */
+/* ---------- Card Image ---------- */
+.card img, .menu-card img {
+  width: 100%;
+  height: 200px; /* fixed height */
+  object-fit: cover; /* crop to fill */
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.card img:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- Card Content ---------- */
 .card-content {
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  flex-grow: 1; /* stretch content */
+  justify-content: space-between;
 }
 
 .card-content h5 {
@@ -132,9 +145,14 @@
   color: #3498db;
 }
 
+.duration {
+  font-size: 0.875rem;
+  color: #555;
+}
+
 /* ---------- Buttons ---------- */
 .btn {
-  margin-top: 1rem;
+  margin-top: auto;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -146,8 +164,8 @@
 
 /* Order Button */
 .btn.order-btn {
-  background-color: #2ecc71; /* green */
-  color: #9c0d0d;
+  background-color: #2ecc71;
+  color: #fff;
 }
 
 .btn.order-btn:hover {
@@ -158,8 +176,8 @@
 
 /* Plan Button */
 .btn.plan-btn {
-  background-color: #3498db; /* blue */
-  color: #e2a0a0;
+  background-color: #3498db;
+  color: #fff;
 }
 
 .btn.plan-btn:hover {
@@ -175,11 +193,6 @@
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
-}
-
-/* Remove underline for buttons if text */
-.btn.no-underline {
-  text-decoration: none;
 }
 
 /* ---------- Orders List ---------- */
@@ -225,12 +238,23 @@
 }
 
 /* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  .card img {
+    height: 150px;
+  }
+}
+
 @media (max-width: 480px) {
   .dashboard-header h1 {
     font-size: 1.5rem;
   }
-
   .grid {
     gap: 1rem;
+  }
+  .card img {
+    height: 120px;
   }
 }

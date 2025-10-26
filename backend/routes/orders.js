@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import Order from "../models/Order.js";
+import { authMiddleware, adminOnly } from "../middleware/auth.js";
+
 const router = express.Router();
-const Order = require("../models/Order");
-const { authMiddleware, adminOnly } = require("../middleware/auth");
 
 // GET all orders (Admin)
 router.get("/", authMiddleware, adminOnly, async (req, res) => {
@@ -70,4 +71,4 @@ router.put("/:id/status", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

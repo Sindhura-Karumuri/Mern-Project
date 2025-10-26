@@ -1,13 +1,10 @@
-const express = require('express');
-const User = require('../models/User');
-const Order = require('../models/Order');
-const Payment = require('../models/Payment'); // Make sure this is the correct import
-const MenuItem = require('../models/MenuItem');
-const { authMiddleware, adminOnly } = require('../middleware/auth');
+import express from "express";
+import { User, Order, Payment, MenuItem } from "../models/index.js"; // ESM import
+import { authMiddleware, adminOnly } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get('/summary', authMiddleware, adminOnly, async (req, res) => {
+router.get("/summary", authMiddleware, adminOnly, async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const activeSubscriptions = await User.countDocuments({ planId: { $ne: null } });
@@ -22,9 +19,9 @@ router.get('/summary', authMiddleware, adminOnly, async (req, res) => {
 
     res.status(200).json({ totalUsers, activeSubscriptions, dailyOrders, revenue, menuCount });
   } catch (err) {
-    console.error('Dashboard summary error:', err);
-    res.status(500).json({ message: 'Dashboard summary failed', error: err.message });
+    console.error("Dashboard summary error:", err);
+    res.status(500).json({ message: "Dashboard summary failed", error: err.message });
   }
 });
 
-module.exports = router;
+export default router;
