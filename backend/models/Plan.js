@@ -1,12 +1,10 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../config/db');
+import mongoose from "mongoose";
 
-class Plan extends Model {}
-Plan.init({
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name: { type: DataTypes.STRING, allowNull: false },
-  price: { type: DataTypes.FLOAT, allowNull: false },
-  duration_in_days: { type: DataTypes.INTEGER, allowNull: false }
-}, { sequelize, modelName: 'plan', timestamps: true });
+const planSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  price: { type: Number, required: true },
+  duration: { type: Number, required: true },
+  image: { type: String, default: null },
+}, { timestamps: true });
 
-module.exports = Plan;
+export default mongoose.model("Plan", planSchema);

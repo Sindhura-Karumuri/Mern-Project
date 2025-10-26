@@ -1,25 +1,27 @@
-# MERN Canteen Project (MySQL + Razorpay + Bootstrap)
+# 🍴 MERN Canteen Management System (MongoDB + Razorpay + Modern UI)
 
-This bundle contains a full-stack project scaffold:
-- Backend: Node.js + Express + Sequelize (MySQL) + Razorpay integration
-- Frontend: React (Vite) + Bootstrap
-- Auth: JWT-based (signup/login)
-- Roles: student / admin
-- Seeded users: admin@site.com / adminpass, student@site.com / studentpass
+A full-stack **MERN application** for college canteen management with authentication, role-based access, payments, and a modern admin dashboard.
 
-## Quick start
+## 🚀 Tech Stack
 
-1. Backend:
-   - cd backend
-   - copy `.env.example` to `.env` and fill values (MySQL credentials, JWT secret, Razorpay keys, FRONTEND_URL)
-   - npm install
-   - npm run seed
-   - npm run dev
+### 🧠 Backend
+- Node.js + Express.js  
+- MongoDB + Mongoose  
+- JWT Authentication  
+- Razorpay Integration for payments  
 
-2. Frontend:
-   - cd frontend
-   - npm install
-   - npm run dev
+### 💻 Frontend
+- React (Vite)
+- Modern UI (TailwindCSS + Shadcn/UI)
+- Role-based views (Student / Admin)
+- Responsive design with improved admin dashboard and menu grid
 
-Visit frontend at http://localhost:5173
+---
 
+## ⚙️ Setup Instructions
+
+### 1️⃣ Backend Setup
+```bash
+cd backend
+cp .env.example .env
+npm install

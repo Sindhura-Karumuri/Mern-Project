@@ -1,24 +1,30 @@
-/* ---------- Page Container ---------- */
+/* ---------- Page Container (Glassmorphic) ---------- */
 .admin-dashboard-container {
   display: flex;
-  justify-content: center; /* center horizontally */
-  align-items: flex-start; /* top-align vertically */
+  justify-content: center;
+  align-items: flex-start;
   min-height: 100vh;
-  background-color: #fdf6f0; /* soft pastel beige */
-  padding: 2rem 2rem;
+  padding: 2rem;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 100%);
 }
 
-/* ---------- Centered Pink Box (Full Width) ---------- */
+/* ---------- Centered Dashboard Box ---------- */
 .admin-dashboard-box {
-  background-color: #ffd6e0; /* pastel pink box */
-  border-radius: 1.25rem;
-  padding: 2rem;
-  width: 100%;
-  max-width: 1600px; /* wider container */
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 2rem;
+  padding: 2.5rem 2rem;
+  width: 90%;
+  max-width: 1200px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  margin: 2rem auto;
 }
 
 /* ---------- Header ---------- */
@@ -27,13 +33,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  padding-bottom: 1rem;
 }
 
 .admin-header h1 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #6b5b95; /* pastel purple */
+  color: #2c3e50;
 }
 
 .admin-header .user-info {
@@ -42,66 +49,337 @@
   gap: 1rem;
 }
 
-.admin-header .logout-btn {
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #e8b8ba, #fad0c4);
-  color: #333;
+.admin-header .user-info span {
   font-weight: 600;
-  border-radius: 0.75rem;
+  color: #34495e;
+}
+
+/* ---------- Logout Button (Red) ---------- */
+.admin-header .logout-btn {
+  padding: 0.5rem 1.2rem;
+  background-color: #e74c3c;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 0.5rem;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .admin-header .logout-btn:hover {
+  background-color: #c0392b;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 /* ---------- Section Titles ---------- */
 .section-title {
   font-weight: 700;
-  font-size: 1.75rem;
+  font-size: 1.8rem;
   margin-bottom: 1.5rem;
-  color: #6b5b95;
-  text-align: center;
+  color: #2c3e50;
+  text-align: left;
+  border-left: 5px solid #3498db;
+  padding-left: 0.75rem;
 }
 
 /* ---------- Grid Layout ---------- */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  justify-items: center; /* center grid items */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.8rem;
   width: 100%;
+  justify-items: center;
 }
 
-/* ---------- Grid Cards (Admin Components) ---------- */
+/* ---------- Grid Cards (Glassmorphic) ---------- */
 .grid > * {
-  background-color: #fef1f5; /* pastel pink */
-  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.8rem;
   border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-left: 4px solid #3498db;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
   width: 100%;
-  max-width: 350px;
-  transition: transform 0.3s, box-shadow 0.3s;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .grid > *:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.15);
+  background: rgba(255, 255, 255, 0.45);
 }
 
-/* Pastel variations for grid cards */
-.grid > :nth-child(1) { background-color: #ffe5d9; } /* light peach */
-.grid > :nth-child(2) { background-color: #e0f7fa; } /* light cyan */
-.grid > :nth-child(3) { background-color: #f3e5f5; } /* light lavender */
-.grid > :nth-child(4) { background-color: #fff9c4; } /* light yellow */
+/* ---------- Orders Grid (special layout) ---------- */
+.orders-grid {
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  justify-items: stretch;
+}
 
 /* ---------- Loading Text ---------- */
 .loading-text {
   text-align: center;
   font-style: italic;
-  color: #555;
-  margin-top: 2rem;
+  color: #7f8c8d;
+  margin-top: 3rem;
+  font-size: 1.2rem;
+}
+
+/* ---------- Plans Card ---------- */
+.plans-card {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+  border-left: 5px solid #3498db;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.plans-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 38px rgba(0,0,0,0.15);
+  background: rgba(255, 255, 255, 0.45);
+}
+
+/* Card Header */
+.plans-card h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+/* Form Inputs */
+.plans-card input,
+.plans-card textarea,
+.plans-card select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(255,255,255,0.6);
+  font-size: 1rem;
+  background: rgba(255,255,255,0.15);
+  color: #2c3e50;
+  transition: all 0.3s ease;
+}
+
+.plans-card input:focus,
+.plans-card textarea:focus,
+.plans-card select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+  background: rgba(255,255,255,0.25);
+  color: #2c3e50;
+}
+
+/* ---------- Action Buttons ---------- */
+.card-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Add Plan Button (Blue) */
+.add-plan-btn,
+.plans-card button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.6rem;
+  font-weight: 600;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+}
+
+.add-plan-btn:hover,
+.plans-card button:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* Add Item Button (Green) */
+.add-item-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.6rem;
+  font-weight: 600;
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+}
+
+.add-item-btn:hover {
+  background-color: #1e8449;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* ---------- Table Card ---------- */
+.table-card {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1200px; /* wider to accommodate tables */
+  margin: 0 auto;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+  border-left: 5px solid #3498db;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.table-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 38px rgba(0,0,0,0.15);
+  background: rgba(255, 255, 255, 0.45);
+}
+
+/* Table Styles (full width) */
+.table-card table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto; /* allow columns to adjust naturally */
+}
+
+.table-card th,
+.table-card td {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  color: #2c3e50;
+  word-break: break-word; /* prevent overflow */
+}
+
+.table-card th {
+  font-weight: 700;
+  border-bottom: 2px solid rgba(255,255,255,0.3);
+}
+
+.table-card td {
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .table-card {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+  .table-card th,
+  .table-card td {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-card th,
+  .table-card td {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+/* ---------- Table Card Adjustments ---------- */
+.table-card table th,
+.table-card table td {
+  color: #2c3e50; /* dark text for visibility */
+}
+
+.dark-mode .table-card table th,
+.dark-mode .table-card table td {
+  color: #f0f0f5; /* light text in dark mode */
+}
+
+/* ---------- Button Colors ---------- */
+.button-complete {
+  background-color: #2ecc71; /* green */
+  color: #fff;
+}
+
+.button-complete:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.button-cancel {
+  background-color: #e74c3c; /* red */
+  color: #fff;
+}
+
+.button-cancel:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* ---------- My Orders List ---------- */
+.orders-list li {
+  background-color: #f1f3f6;
+  color: #2c3e50; /* text visible */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+}
+
+.dark-mode .orders-list li {
+  background-color: #3a3f55;
+  color: #f0f0f5; /* visible in dark mode */
+}
+
+/* ---------- Order Status Badge ---------- */
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #fff;
+  text-align: center;
+}
+
+.status-pending {
+  background-color: #f1c40f; /* yellow */
+}
+
+.status-completed {
+  background-color: #2ecc71; /* green */
+}
+
+.status-cancelled {
+  background-color: #e74c3c; /* red */
+}
+
+/* ---------- My Orders List Responsive ---------- */
+@media (max-width: 480px) {
+  .orders-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 }

@@ -41,18 +41,35 @@ function StudentDashboard({ user, logout }) {
   }, []);
 
   const placeOrder = async (menuItemId) => {
-    try {
-      await API.post('/orders', { menuItemId, quantity: 1 });
-      const orderedItem = menu.find(m => m.id === menuItemId);
-      setOrders(prev => [
-        ...prev,
-        { menuItemId, menuItem: orderedItem, status: 'Pending', totalPrice: orderedItem?.price || 0 },
-      ]);
-      alert('Order placed!');
-    } catch (err) {
-      alert(err.response?.data?.message || 'Error placing order');
-    }
-  };
+  try {
+    // Find menu item by _id
+    const menuItem = menu.find((m) => m._id === menuItemId);
+    if (!menuItem) throw new Error("Menu item not found");
+
+    const items = [
+      {
+        name: menuItem.name,
+        quantity: 1,
+        price: menuItem.price,
+      },
+    ];
+
+    const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    const { data } = await API.post("/orders", {
+      items,
+      totalAmount,
+      paymentStatus: "pending",
+    });
+
+    setOrders((prev) => [...prev, data]);
+    alert("Order placed successfully!");
+  } catch (err) {
+    console.error(err);
+    alert(err.message || err.response?.data?.message || "Error placing order");
+  }
+};
+
 
   const subscribe = async (planId) => {
     try {
@@ -110,13 +127,14 @@ function StudentDashboard({ user, logout }) {
       ) : (
         <div className="grid">
           {menu.map(item => (
-            <MenuCard
-              key={item.id}
-              item={item}
-              onOrder={placeOrder}
-              className="card"
-            />
-          ))}
+  <MenuCard
+    key={item._id}               // <-- use _id
+    item={item}
+    onOrder={() => placeOrder(item._id)} // <-- pass _id to placeOrder
+    className="card"
+  />
+))}
+
         </div>
       )}
 
@@ -144,13 +162,22 @@ function StudentDashboard({ user, logout }) {
         <p>No orders yet.</p>
       ) : (
         <ul className="orders-list">
-          {orders.map(o => (
-            <li key={o.menuItemId}>
-              <span>{o.menuItem?.name || o.menuItemId}</span>
-              <span>{o.status} - ₹{o.totalPrice}</span>
-            </li>
-          ))}
-        </ul>
+  {orders.map(order => (
+    <li key={order._id} className="flex flex-col gap-1">
+      <span><strong>Order ID:</strong> {order._id}</span>
+      {order.items.map((item, idx) => (
+        <span key={idx}>
+          {item.name} x {item.quantity} - ₹{item.price * item.quantity}
+        </span>
+      ))}
+      <span>
+        <strong>Status:</strong> {order.status} - <strong>Total:</strong> ₹{order.totalAmount}
+      </span>
+    </li>
+  ))}
+</ul>
+
+
       )}
     </div>
   );

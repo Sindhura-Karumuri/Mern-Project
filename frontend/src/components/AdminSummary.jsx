@@ -3,15 +3,35 @@ import API from '../api';
 
 export default function AdminSummary() {
   const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    API.get('/admin/summary')
-      .then(r => setSummary(r.data))
-      .catch(err => console.error('Failed to fetch summary', err));
+    const fetchSummary = async () => {
+      try {
+        const res = await API.get('/admin/summary');
+        setSummary(res.data);
+      } catch (err) {
+        console.error('Failed to fetch summary', err);
+        setError('Failed to load summary.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSummary();
   }, []);
 
-  if (!summary) {
-    return <div className="text-gray-500 dark:text-gray-400 animate-pulse mt-4">Loading admin summary...</div>;
+  if (loading) {
+    return (
+      <div className="text-gray-500 dark:text-gray-400 animate-pulse mt-6 text-center">
+        Loading admin summary...
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-red-500 mt-6 text-center">{error}</div>;
   }
 
   const stats = [
@@ -23,16 +43,18 @@ export default function AdminSummary() {
   ];
 
   return (
-    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-xl transition-shadow flex flex-col items-center"
-        >
-          <div className="text-gray-500 dark:text-gray-400 text-sm">{stat.label}</div>
-          <div className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-1">{stat.value}</div>
-        </div>
-      ))}
+    <div className="mt-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow flex flex-col items-center justify-center"
+          >
+            <div className="text-gray-500 dark:text-gray-400 text-sm font-medium">{stat.label}</div>
+            <div className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 mt-2">{stat.value}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

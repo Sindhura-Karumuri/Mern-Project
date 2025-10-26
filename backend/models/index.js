@@ -1,31 +1,28 @@
-const sequelize = require('../config/db');
-const User = require('./User');
-const Plan = require('./Plan');
-const MenuItem = require('./MenuItem');
-const Order = require('./Order');
-const Payment = require('./Payment');
+const mongoose = require("mongoose");
+const User = require("./User");
+const Plan = require("./Plan");
+const MenuItem = require("./MenuItem");
+const Order = require("./Order");
+const Payment = require("./Payment");
 
-// associations
-User.hasMany(Order, { foreignKey: 'userId' });
-Order.belongsTo(User, { foreignKey: 'userId' });
-
-Plan.hasMany(Payment, { foreignKey: 'planId' });
-Payment.belongsTo(Plan, { foreignKey: 'planId' });
-
-User.hasMany(Payment, { foreignKey: 'userId' });
-Payment.belongsTo(User, { foreignKey: 'userId' });
-
-Plan.hasMany(User, { foreignKey: 'planId' });
-User.belongsTo(Plan, { foreignKey: 'planId' });
-
-MenuItem.hasMany(Order, { foreignKey: 'menuItemId' });
-Order.belongsTo(MenuItem, { foreignKey: 'menuItemId' });
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/mern_canteen", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("✅ MongoDB connected successfully");
+  } catch (err) {
+    console.error("❌ MongoDB connection failed:", err.message);
+    process.exit(1);
+  }
+};
 
 module.exports = {
-  sequelize,
+  connectDB,
   User,
   Plan,
   MenuItem,
   Order,
-  Payment
+  Payment,
 };

@@ -1,39 +1,73 @@
-const express = require('express');
-const { Order, MenuItem } = require('../models');
-const { authMiddleware, adminOnly } = require('../middleware/auth');
-
+const express = require("express");
 const router = express.Router();
+const Order = require("../models/Order");
+const { authMiddleware, adminOnly } = require("../middleware/auth");
 
-// place order - student
-router.post('/', authMiddleware, async (req, res) => {
-  const { menuItemId, quantity = 1 } = req.body;
-  const menuItem = await MenuItem.findByPk(menuItemId);
-  if (!menuItem || !menuItem.available) return res.status(400).json({ message: 'Item not available' });
-  const totalPrice = menuItem.price * quantity;
-  const order = await Order.create({ userId: req.user.id, menuItemId, quantity, totalPrice, status: 'Pending' });
-  res.json(order);
+// GET all orders (Admin)
+router.get("/", authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const orders = await Order.find().populate("user", "-password");
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Get all orders error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// get user's orders
-router.get('/my', authMiddleware, async (req, res) => {
-  const orders = await Order.findAll({ where: { userId: req.user.id }, include: [MenuItem] });
-  res.json(orders);
+// GET orders of logged-in user
+router.get("/my", authMiddleware, async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user.id });
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Get my orders error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// admin: list all
-router.get('/', authMiddleware, adminOnly, async (req, res) => {
-  const orders = await Order.findAll({ include: [MenuItem] });
-  res.json(orders);
+// Create new order
+router.post("/", authMiddleware, async (req, res) => {
+  try {
+    const { items, totalAmount, paymentStatus } = req.body;
+
+    if (!items || !Array.isArray(items) || items.length === 0)
+      return res.status(400).json({ message: "Items are required and must be an array" });
+
+    if (totalAmount === undefined)
+      return res.status(400).json({ message: "totalAmount is required" });
+
+    const newOrder = new Order({
+      user: req.user.id,
+      items,
+      totalAmount,
+      paymentStatus: paymentStatus || "pending",
+    });
+
+    await newOrder.save();
+    res.status(201).json(newOrder);
+  } catch (error) {
+    console.error("Create order error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
 
-// admin update status
-router.put('/:id/status', authMiddleware, adminOnly, async (req, res) => {
-  const order = await Order.findByPk(req.params.id);
-  if (!order) return res.status(404).json({ message: 'Not found' });
-  const { status } = req.body;
-  order.status = status;
-  await order.save();
-  res.json(order);
+// Update order status (Admin)
+router.put("/:id/status", authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const order = await Order.findById(id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    order.status = status;
+    await order.save();
+
+    res.json(order);
+  } catch (error) {
+    console.error("Update order status error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 module.exports = router;

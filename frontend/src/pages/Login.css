@@ -4,29 +4,29 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #fdf6f0; /* pastel beige background */
+  background-color: #f4f6f8; /* match dashboard soft neutral */
   padding: 1rem;
   transition: background-color 0.5s;
 }
 
 /* Dark mode background */
 .login-container.dark {
-  background-color: #1f2937; /* dark gray */
+  background-color: #1a1a2e; /* match dashboard dark mode */
 }
 
 /* ---------- Login Card ---------- */
 .login-card {
-  background-color: #ffffff; /* white card */
+  background-color: #ffffff; /* match dashboard cards */
   border-radius: 1rem;
   padding: 2rem;
   max-width: 400px;
   width: 100%;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   transition: box-shadow 0.3s, background-color 0.5s;
 }
 
 .login-card:hover {
-  box-shadow: 0 12px 36px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
 /* Dark mode card */
@@ -39,12 +39,12 @@
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: #6b5b95; /* pastel purple */
+  color: #2c3e50; /* match dashboard section titles */
   text-align: center;
 }
 
 .login-card.dark h2 {
-  color: #e2e8f0; /* light text for dark mode */
+  color: #f0f0f5; /* light text for dark mode */
 }
 
 /* ---------- Error Message ---------- */
@@ -69,7 +69,7 @@
   margin-bottom: 1rem;
   border-radius: 0.75rem;
   border: 1px solid #d1d5db;
-  background-color: #fef1f5; /* pastel pink inputs */
+  background-color: #fef1f5; /* optional pastel accent */
   color: #111827;
   font-size: 1rem;
   transition: border 0.3s, background-color 0.3s;
@@ -77,12 +77,12 @@
 
 .login-card input:focus {
   outline: none;
-  border-color: #6b5b95; /* pastel purple focus */
-  box-shadow: 0 0 0 3px rgba(107, 91, 149, 0.2);
+  border-color: #3498db; /* match dashboard button/plan color */
+  box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
 }
 
 .login-card.dark input {
-  background-color: #4a5568; /* dark input bg */
+  background-color: #4a5568;
   border-color: #718096;
   color: #edf2f7;
 }
@@ -93,21 +93,24 @@
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   font-weight: 600;
-  color: #ffffff;
-  background-color: #6b5b95; /* pastel purple button */
+  color: #fff;
+  background-color: #3498db; /* dashboard button color */
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
 }
 
 .login-card button[type="submit"]:hover {
-  background-color: #5a4a7e;
+  background-color: #2980b9;
   transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .login-card button[type="submit"]:disabled {
-  background-color: #a0aec0;
+  background-color: #ddd;
+  color: #aaa;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* ---------- Divider ---------- */
@@ -121,9 +124,9 @@
 .toggle-auth {
   width: 100%;
   text-align: center;
-  color: #6b5b95;
+  color: #3498db; /* dashboard button/plan color */
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none; /* removed underline */
   background: none;
   border: none;
   font-size: 0.95rem;
@@ -131,15 +134,15 @@
 }
 
 .toggle-auth:hover {
-  color: #5a4a7e;
+  color: #2980b9;
 }
 
 .toggle-auth.dark {
-  color: #d6bcfa;
+  color: #63b3ed; /* lighter blue for dark mode */
 }
 
 .toggle-auth.dark:hover {
-  color: #b794f4;
+  color: #4299e1;
 }
 
 /* ---------- Responsive ---------- */

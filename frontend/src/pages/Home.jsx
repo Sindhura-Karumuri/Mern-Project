@@ -36,16 +36,25 @@ export default function Home() {
       navigate("/login");
       return;
     }
+
     try {
       setProcessingPlan(planId);
-      const { data } = await API.post("/payments/create-order", { planId });
+
+      const plan = plans.find((p) => p._id === planId);
+      if (!plan) throw new Error("Plan not found");
+
+      const { data } = await API.post("/payments/create-order", {
+        planId,
+        userId: user._id,
+      });
+
       const options = {
-        key: data.key,
-        amount: data.order.amount,
-        currency: data.order.currency,
+        key: data.key || process.env.REACT_APP_RAZORPAY_KEY,
+        amount: data.amount,
+        currency: data.currency,
         name: "Canteen Subscription",
-        description: "Plan purchase",
-        order_id: data.order.id,
+        description: `Subscribe to ${plan.name}`,
+        order_id: data.id,
         prefill: { name: user.name, email: user.email },
         handler: async (response) => {
           try {
@@ -53,34 +62,45 @@ export default function Home() {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              paymentId: data.paymentId,
+              planId,
+              userId: user._id,
             });
             alert("Payment successful! Subscription updated.");
           } catch (err) {
-            console.error(err);
+            console.error("Verification error:", err);
             alert("Payment verification failed.");
           } finally {
             setProcessingPlan(null);
           }
         },
       };
+
       new window.Razorpay(options).open();
     } catch (err) {
-      console.error(err);
+      console.error("Payment error:", err);
       alert("Payment failed. Try again.");
       setProcessingPlan(null);
     }
   };
 
+const getImageURL = (path) =>
+  path ? `http://localhost:5000${path.startsWith("/") ? path : "/" + path}` : "/default-image.png";
+
+
+
+
   const Card = ({ children }) => <div className="card">{children}</div>;
 
   const MenuCard = ({ item }) => (
     <Card>
-      {item.image && <img src={item.image} alt={item.name} />}
+      <img
+        src={getImageURL(item.image)}
+        alt={item.name}
+        className="card-img"
+        onError={(e) => (e.target.src = "/default-image.png")}
+      />
       <div className="card-content">
-        <h5>
-          <Link to={`/menu/${item.id}`}>{item.name}</Link>
-        </h5>
+        <h5>{item.name}</h5>
         <p>{item.category}</p>
         <p className="price">₹{item.price}</p>
       </div>
@@ -89,19 +109,23 @@ export default function Home() {
 
   const PlanCard = ({ plan }) => (
     <Card>
-      {plan.image && <img src={plan.image} alt={plan.name} />}
+      <img
+        src={getImageURL(plan.image)}
+        alt={plan.name}
+        className="card-img"
+        onError={(e) => (e.target.src = "/default-image.png")}
+      />
       <div className="card-content">
         <h5>{plan.name}</h5>
         <p className="price">₹{plan.price}</p>
-        <p className="duration">{plan.duration_in_days} days</p>
-
+        <p className="duration">{plan.duration} days</p>
         {user ? (
           <button
-            onClick={() => subscribe(plan.id)}
-            disabled={processingPlan === plan.id}
+            onClick={() => subscribe(plan._id)}
+            disabled={processingPlan === plan._id}
             className="btn"
           >
-            {processingPlan === plan.id ? "Processing..." : "Subscribe"}
+            {processingPlan === plan._id ? "Processing..." : "Subscribe"}
           </button>
         ) : (
           <Link to="/login" className="btn">
@@ -117,23 +141,27 @@ export default function Home() {
       <h1 className="section-title">🍴 Canteen Menu</h1>
       {loading.menu ? (
         <p className="loading-text">Loading menu...</p>
-      ) : (
+      ) : menu.length ? (
         <div className="grid">
           {menu.map((item) => (
-            <MenuCard key={item.id} item={item} />
+            <MenuCard key={item._id} item={item} />
           ))}
         </div>
+      ) : (
+        <p>No menu items available.</p>
       )}
 
       <h2 className="section-subtitle">💳 Subscription Plans</h2>
       {loading.plans ? (
         <p className="loading-text">Loading plans...</p>
-      ) : (
+      ) : plans.length ? (
         <div className="grid">
           {plans.map((plan) => (
-            <PlanCard key={plan.id} plan={plan} />
+            <PlanCard key={plan._id} plan={plan} />
           ))}
         </div>
+      ) : (
+        <p>No subscription plans available.</p>
       )}
     </div>
   );

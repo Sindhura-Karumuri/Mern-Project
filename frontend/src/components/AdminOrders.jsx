@@ -30,9 +30,8 @@ export default function AdminOrders() {
     }
   };
 
-  if (loading) {
-    return <p className="text-gray-500 dark:text-gray-400 animate-pulse">Loading orders...</p>;
-  }
+  if (loading) return <p className="text-gray-500 dark:text-gray-400 animate-pulse">Loading orders...</p>;
+  if (orders.length === 0) return <p className="text-gray-500 dark:text-gray-400 text-center">No orders found.</p>;
 
   return (
     <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md transition-shadow hover:shadow-xl">
@@ -41,7 +40,7 @@ export default function AdminOrders() {
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
-              {['Order ID', 'User', 'Item', 'Qty', 'Total', 'Status', 'Actions'].map((head) => (
+              {['Order ID', 'User', 'Items', 'Qty', 'Total', 'Status', 'Actions'].map(head => (
                 <th
                   key={head}
                   className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-200 uppercase tracking-wider"
@@ -52,14 +51,22 @@ export default function AdminOrders() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-            {orders.map((o) => (
-              <tr key={o.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <td className="px-4 py-2">{o.id}</td>
-                <td className="px-4 py-2">{o.userId}</td>
-                <td className="px-4 py-2">{o.menuItem?.name || o.menuItemId}</td>
-                <td className="px-4 py-2">{o.quantity}</td>
-                <td className="px-4 py-2">₹{o.totalPrice}</td>
+            {orders.map(o => (
+              <tr key={o._id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <td className="px-4 py-2">{o._id}</td>
+                <td className="px-4 py-2">{o.user?.name || 'N/A'}</td>
                 <td className="px-4 py-2">
+                  {o.items.map((item, idx) => (
+                    <div key={idx}>
+                      {item.name} (₹{item.price} × {item.quantity})
+                    </div>
+                  ))}
+                </td>
+                <td className="px-4 py-2 text-center">
+                  {o.items.reduce((sum, item) => sum + (item.quantity || 0), 0)}
+                </td>
+                <td className="px-4 py-2 text-right">₹{o.totalAmount}</td>
+                <td className="px-4 py-2 text-center">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       o.status === 'Completed'
@@ -72,29 +79,22 @@ export default function AdminOrders() {
                     {o.status}
                   </span>
                 </td>
-                <td className="px-4 py-2 flex space-x-2">
+                <td className="px-4 py-2 flex space-x-2 justify-center">
                   <button
                     className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded transition"
-                    onClick={() => updateStatus(o.id, 'Completed')}
+                    onClick={() => updateStatus(o._id, 'Completed')}
                   >
                     Complete
                   </button>
                   <button
                     className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded transition"
-                    onClick={() => updateStatus(o.id, 'Cancelled')}
+                    onClick={() => updateStatus(o._id, 'Cancelled')}
                   >
                     Cancel
                   </button>
                 </td>
               </tr>
             ))}
-            {orders.length === 0 && (
-              <tr>
-                <td colSpan={7} className="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
-                  No orders found.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>

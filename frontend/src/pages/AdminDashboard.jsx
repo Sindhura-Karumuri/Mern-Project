@@ -13,7 +13,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="admin-dashboard-container">
-      {/* Centered Pink Box */}
       <div className="admin-dashboard-box">
         {/* Header */}
         <div className="admin-header">
@@ -33,6 +32,7 @@ export default function AdminDashboard() {
             <AdminSummary />
           </div>
         </div>
+
         {/* Plans Management */}
         <div className="section mb-10">
           <h2 className="section-title">Plans Management</h2>

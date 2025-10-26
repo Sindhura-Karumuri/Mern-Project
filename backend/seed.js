@@ -1,50 +1,36 @@
-const sequelize = require('./config/db');
-const User = require('./models/User');
-const Plan = require('./models/Plan');
-const MenuItem = require('./models/MenuItem');
-const Order = require('./models/Order');
-const Payment = require('./models/Payment');
-const bcrypt = require('bcryptjs');
+import express from "express";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import cors from "cors";
 
-async function seed() {
-  try {
-    // Drop tables in dependent-first order
-    await Order.drop();
-    await Payment.drop();
-    await User.drop();
-    await MenuItem.drop();
-    await Plan.drop();
+import authRoutes from "./routes/authRoutes.js";
+import menuRoutes from "./routes/menuRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import planRoutes from "./routes/planRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
-    // Recreate tables
-    await sequelize.sync({ force: true });
+dotenv.config();
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-    const adminPass = await bcrypt.hash('adminpass', 10);
-    const userPass = await bcrypt.hash('studentpass', 10);
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("✅ MongoDB connected"))
+.catch((err) => console.error("❌ DB connection failed:", err));
 
-    // Users
-    await User.create({ name: 'Admin User', email: 'admin@site.com', password: adminPass, role: 'admin' });
-    await User.create({ name: 'Student User', email: 'student@site.com', password: userPass, role: 'student' });
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/menu", menuRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/plans", planRoutes);
+app.use("/api/admin", adminRoutes);
 
-    // Plans
-    await Plan.bulkCreate([
-      { name: 'Daily', price: 40, duration_in_days: 1 },
-      { name: 'Weekly', price: 250, duration_in_days: 7 },
-      { name: 'Monthly', price: 800, duration_in_days: 30 }
-    ]);
-
-    // Menu items
-    await MenuItem.bulkCreate([
-      { name: 'Masala Dosa', category: 'Breakfast', price: 40 },
-      { name: 'Paneer Butter Masala with Rice', category: 'Lunch', price: 120 },
-      { name: 'Tea & Biscuit', category: 'Snacks', price: 20 }
-    ]);
-
-    console.log('Seed completed');
-    process.exit(0);
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
-  }
-}
-
-seed();
+app.listen(process.env.PORT || 5000, () =>
+  console.log(`🚀 Server running on port ${process.env.PORT || 5000}`)
+);

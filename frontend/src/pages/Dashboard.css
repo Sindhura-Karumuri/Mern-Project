@@ -1,13 +1,15 @@
 /* ---------- Container ---------- */
 .dashboard-container {
-  padding: 1.5rem;
+  padding: 2rem;
   min-height: 100vh;
-  background-color: #fdf6f9; /* soft pastel lavender */
-  transition: background-color 0.5s ease;
+  background-color: #f4f6f8; /* soft neutral */
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.5s, color 0.5s;
 }
 
+/* Dark Mode */
 .dark-mode .dashboard-container {
-  background-color: #1a1a2e; /* deep pastel blue-dark */
+  background-color: #1a1a2e;
   color: #f0f0f5;
 }
 
@@ -17,12 +19,14 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 1rem;
 }
 
 .dashboard-header h1 {
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #7b5cff; /* pastel purple */
+  color: #2c3e50;
 }
 
 .dashboard-header .user-info {
@@ -33,56 +37,66 @@
 
 .dashboard-header button.logout-btn {
   padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #ffb3ba, #ffdfba); /* pastel coral-orange */
-  color: #333;
+  background-color: #e74c3c;
+  color: #fff;
   font-weight: 600;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .dashboard-header button.logout-btn:hover {
+  background-color: #c0392b;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ---------- Section Titles ---------- */
+.section-title {
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  border-left: 4px solid #3498db;
+  padding-left: 0.75rem;
+}
+
+.section-subtitle {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #34495e;
 }
 
 /* ---------- Grid Layout ---------- */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
-  margin-bottom: 2rem;
+  justify-items: center;
 }
 
 /* ---------- Card Styles ---------- */
 .card {
   display: flex;
   flex-direction: column;
+  background-color: #ffffff;
   border-radius: 1rem;
-  overflow: hidden;
-  font-weight: 600;
-  color: #333;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 360px;
+  transition: transform 0.3s, box-shadow 0.3s, background-color 0.5s;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-/* Pastel Colors for Cards */
-.card:nth-child(4n+1) { background-color: #ffd6e0; } /* pastel pink */
-.card:nth-child(4n+2) { background-color: #d6f5e0; } /* pastel mint-green */
-.card:nth-child(4n+3) { background-color: #d6e0ff; } /* pastel blue */
-.card:nth-child(4n+4) { background-color: #fff5d6; } /* pastel yellow */
-
-/* Card Images */
-.card img {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  border-bottom: 1px solid rgba(255,255,255,0.3);
+/* Dark mode cards */
+.dark-mode .card {
+  background-color: #2d3748;
+  color: #f0f0f5;
 }
 
 /* Card Content */
@@ -90,65 +104,85 @@
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
+  gap: 0.5rem;
 }
 
 .card-content h5 {
   font-size: 1.125rem;
-  margin-bottom: 0.5rem;
-  color: #7b5cff; /* pastel purple heading */
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.dark-mode .card-content h5 {
+  color: #f0f0f5;
 }
 
 .card-content p {
-  font-size: 0.875rem;
-  margin: 0.2rem 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.dark-mode .card-content p {
+  color: #d1d5db;
 }
 
 .price {
   margin-top: 0.5rem;
   font-weight: 700;
+  color: #3498db;
 }
 
 /* ---------- Buttons ---------- */
 .btn {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   font-weight: 600;
   text-align: center;
   cursor: pointer;
   border: none;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, #a0e7e5, #b4f8c8); /* pastel aqua-green */
-  color: #333;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.btn:hover {
+/* Order Button */
+.btn.order-btn {
+  background-color: #2ecc71; /* green */
+  color: #9c0d0d;
+}
+
+.btn.order-btn:hover {
+  background-color: #27ae60;
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
+/* Plan Button */
+.btn.plan-btn {
+  background-color: #3498db; /* blue */
+  color: #e2a0a0;
+}
+
+.btn.plan-btn:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Disabled button */
 .btn:disabled {
-  background: #eee;
+  background: #ddd;
   color: #aaa;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
 }
 
-/* ---------- Section Titles ---------- */
-.section-title, .section-subtitle {
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #ff9ff3; /* soft pastel pink for headings */
+/* Remove underline for buttons if text */
+.btn.no-underline {
+  text-decoration: none;
 }
 
-.section-title { font-size: 2rem; }
-.section-subtitle { font-size: 1.5rem; margin-top: 2rem; }
-
-/* ---------- Orders List (Dark Pastel) ---------- */
+/* ---------- Orders List ---------- */
 .orders-list {
   list-style: none;
   padding: 0;
@@ -161,22 +195,21 @@
 .orders-list li {
   padding: 1rem;
   border-radius: 0.75rem;
-  background-color: #4b4b7a; /* pastel indigo-dark */
-  color: #f5f5f5; /* light text */
+  background-color: #afcaf7;
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .orders-list li:hover {
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transform: translateY(-2px);
 }
 
+/* Dark mode orders */
 .dark-mode .orders-list li {
-  background-color: #2f2f5c; /* deeper pastel indigo */
+  background-color: #3a3f55;
   color: #f0f0f5;
 }
 
@@ -185,4 +218,19 @@
   text-align: center;
   font-style: italic;
   color: #555;
+}
+
+.dark-mode .loading-text {
+  color: #d1d5db;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .grid {
+    gap: 1rem;
+  }
 }

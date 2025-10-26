@@ -1,15 +1,16 @@
-const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../config/db');
+const mongoose = require("mongoose");
 
-class Payment extends Model {}
-Payment.init({
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  userId: { type: DataTypes.INTEGER, allowNull: false },
-  planId: { type: DataTypes.INTEGER, allowNull: true },
-  amount: { type: DataTypes.FLOAT, allowNull: false },
-  status: { type: DataTypes.ENUM('Pending','Succeeded','Failed'), defaultValue: 'Pending' },
-  provider_payment_id: { type: DataTypes.STRING, allowNull: true },
-  metadata: { type: DataTypes.JSON, allowNull: true }
-}, { sequelize, modelName: 'payment', timestamps: true });
+const paymentSchema = new mongoose.Schema(
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    plan: { type: mongoose.Schema.Types.ObjectId, ref: "Plan" },
+    amount: { type: Number, required: true },
+    status: { type: String, enum: ["Pending", "Succeeded", "Failed"], default: "Pending" },
+    razorpay_order_id: { type: String },
+    razorpay_payment_id: { type: String },
+    razorpay_signature: { type: String },
+  },
+  { timestamps: true }
+);
 
-module.exports = Payment;
+module.exports = mongoose.model("Payment", paymentSchema);
