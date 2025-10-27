@@ -82,6 +82,43 @@ body {
   animation: fadeIn 0.6s ease-out;
 }
 
+/* Mobile Responsive Fixes */
+@media (max-width: 768px) {
+  .container {
+    @apply px-2;
+  }
+  
+  .grid-responsive {
+    @apply grid-cols-1 gap-4;
+  }
+  
+  .form-input {
+    @apply text-base;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-success, .btn-danger {
+    @apply px-4 py-3 text-sm;
+  }
+  
+  .nav-link {
+    @apply px-2 py-3 text-sm;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    @apply px-1;
+  }
+  
+  .form-input {
+    @apply px-3 py-2 text-sm;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-success, .btn-danger {
+    @apply px-3 py-2 text-xs;
+  }
+}
+
 /* Smooth transitions for color changes */
 html {
   transition: background-color 0.3s, color 0.3s;
