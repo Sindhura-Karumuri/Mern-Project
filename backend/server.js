@@ -30,6 +30,7 @@ app.use(
       "http://localhost:5174", // optional fallback if used
       "http://localhost:3000", // CRA fallback
       "https://meal-plan-portal.vercel.app", // deployed frontend
+      "https://mern-project-frontend-olt6.onrender.com", // deployed frontend on Render
     ],
     credentials: true,
   })
