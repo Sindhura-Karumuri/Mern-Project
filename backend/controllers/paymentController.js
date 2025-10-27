@@ -15,34 +15,27 @@ export const createOrder = async (req, res) => {
     const plan = await Plan.findById(planId);
     if (!plan) return res.status(404).json({ message: "Plan not found" });
 
-    const razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    // For testing without Razorpay - simulate successful subscription
+    const user = await User.findById(userId);
+    if (user) {
+      user.subscription = planId;
+      await user.save();
+    }
+
+    // Track revenue for subscription
+    console.log(`📊 Tracking subscription revenue: ₹${plan.price} for plan ${plan.name}`);
+    const Revenue = (await import("../models/Revenue.js")).default;
+    await Revenue.create({
+      type: "subscription",
+      amount: plan.price,
+      planId: plan._id,
+      userId: userId
     });
-
-    const options = {
-      amount: plan.price * 100, // in paise
-      currency: "INR",
-      receipt: `receipt_${Date.now()}`,
-      notes: {
-        planId: plan._id.toString(),
-        userId,
-      },
-      items: [
-        {
-          name: plan.name,
-          amount: plan.price * 100,
-          currency: "INR",
-          quantity: 1,
-        },
-      ],
-    };
-
-    const order = await razorpay.orders.create(options);
+    console.log(`✅ Subscription revenue tracked successfully`);
 
     res.status(200).json({
-      key: process.env.RAZORPAY_KEY_ID,
-      order,
+      success: true,
+      message: "Subscription successful!",
       planId: plan._id,
     });
   } catch (err) {
@@ -53,16 +46,7 @@ export const createOrder = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, userId, planId } = req.body;
-
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSign = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(sign)
-      .digest("hex");
-
-    if (razorpay_signature !== expectedSign) {
-      return res.status(400).json({ success: false, message: "Invalid signature" });
-    }
+    const { userId, planId } = req.body;
 
     // Save subscription to user
     const user = await User.findById(userId);

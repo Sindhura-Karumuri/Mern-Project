@@ -26,17 +26,18 @@ router.get("/", async (req, res) => {
 
 // POST new plan
 router.post("/", upload.single("image"), async (req, res) => {
-  const { name, price, duration_in_days } = req.body;
+  const { name, price, duration, image } = req.body;
 
-  if (!name || !price || !duration_in_days)
+  if (!name || !price || !duration)
     return res.status(400).json({ message: "All fields are required" });
 
   try {
+    const imageUrl = req.file ? `/uploads/plans/${req.file.filename}` : image;
     const plan = new Plan({
       name,
       price,
-      duration: duration_in_days,
-      image: req.file ? `/uploads/plans/${req.file.filename}` : null,
+      duration,
+      image: imageUrl,
     });
     await plan.save();
     res.status(201).json({ message: "Plan added successfully", plan });
@@ -54,18 +55,17 @@ router.put("/:id", upload.single("image"), async (req, res) => {
 
     plan.name = req.body.name || plan.name;
     plan.price = req.body.price || plan.price;
-    plan.duration = req.body.duration_in_days || plan.duration;
+    plan.duration = req.body.duration || plan.duration;
 
-    // Replace image if new file uploaded
+    // Handle image update - either file upload or URL
     if (req.file) {
-      if (plan.image) {
-        const oldPath = path.join(process.cwd(), plan.image);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-      }
       plan.image = `/uploads/plans/${req.file.filename}`;
+    } else if (req.body.image) {
+      plan.image = req.body.image;
     }
 
     await plan.save();
+    console.log("✅ Updated plan:", plan);
     res.json({ message: "Plan updated successfully", plan });
   } catch (err) {
     console.error(err);

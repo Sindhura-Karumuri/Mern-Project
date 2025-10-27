@@ -33,10 +33,10 @@ router.get("/", async (req, res) => {
 // POST new menu item
 router.post("/", upload.single("image"), async (req, res) => {
   try {
-    const { name, price, category } = req.body;
-    const image = req.file ? `/uploads/menu/${req.file.filename}` : null;
+    const { name, price, category, image } = req.body;
+    const imageUrl = req.file ? `/uploads/menu/${req.file.filename}` : image;
 
-    const newItem = new MenuItem({ name, price, category, image });
+    const newItem = new MenuItem({ name, price, category, image: imageUrl });
     await newItem.save();
     res.status(201).json(newItem);
   } catch (err) {
@@ -55,17 +55,15 @@ router.put("/:id", upload.single("image"), async (req, res) => {
     item.price = req.body.price || item.price;
     item.category = req.body.category || item.category;
 
-    // If new image is uploaded, remove old image
+    // Handle image update - either file upload or URL
     if (req.file) {
-      if (item.image) {
-        const oldImagePath = path.join(__dirname, "..", item.image.replace(/^\//, ""));
-        if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
-      }
       item.image = `/uploads/menu/${req.file.filename}`;
+    } else if (req.body.image) {
+      item.image = req.body.image;
     }
 
     await item.save();
-    console.log("✅ Updated item image:", item.image);
+    console.log("✅ Updated item:", item);
     res.json({ message: "Menu item updated successfully", item });
   } catch (err) {
     console.error(err);

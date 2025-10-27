@@ -61,8 +61,22 @@ router.put("/:id/status", authMiddleware, adminOnly, async (req, res) => {
     const order = await Order.findById(id);
     if (!order) return res.status(404).json({ message: "Order not found" });
 
+    const oldStatus = order.status;
     order.status = status;
     await order.save();
+
+    // Track revenue when order is completed (case insensitive)
+    if (status.toLowerCase() === "completed" && oldStatus.toLowerCase() !== "completed") {
+      console.log(`📊 Tracking revenue for order ${order._id}: ₹${order.totalAmount}`);
+      const Revenue = (await import("../models/Revenue.js")).default;
+      await Revenue.create({
+        type: "order",
+        amount: order.totalAmount,
+        orderId: order._id,
+        userId: order.user
+      });
+      console.log(`✅ Revenue tracked successfully`);
+    }
 
     res.json(order);
   } catch (error) {

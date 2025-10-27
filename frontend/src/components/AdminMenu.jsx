@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import API from "../api";
-import MenuCard from "./MenuCard";
 
 export default function AdminMenu() {
   const [menu, setMenu] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [newItem, setNewItem] = useState({ name: "", price: "", category: "", image: null });
+  const [newItem, setNewItem] = useState({ name: "", price: "", category: "Breakfast", image: "" });
   const [editingItem, setEditingItem] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const fetchMenu = async () => {
     try {
@@ -25,31 +25,35 @@ export default function AdminMenu() {
   }, []);
 
   const handleSave = async () => {
+    if (!newItem.name || !newItem.price || !newItem.category) {
+      return alert("Please fill all required fields");
+    }
+
     try {
-      const formData = new FormData();
-      formData.append("name", newItem.name);
-      formData.append("price", newItem.price);
-      formData.append("category", newItem.category);
-      if (newItem.image) formData.append("image", newItem.image);
+      setSaving(true);
+      const itemData = {
+        name: newItem.name,
+        price: Number(newItem.price),
+        category: newItem.category,
+        image: newItem.image
+      };
 
       if (editingItem) {
-        await API.put(`/menu/${editingItem._id}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        alert("Menu item updated");
+        await API.put(`/menu/${editingItem._id}`, itemData);
+        alert("Menu item updated successfully!");
       } else {
-        await API.post("/menu", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        alert("Menu item added");
+        await API.post("/menu", itemData);
+        alert("Menu item added successfully!");
       }
 
-      setNewItem({ name: "", price: "", category: "", image: null });
+      setNewItem({ name: "", price: "", category: "Breakfast", image: "" });
       setEditingItem(null);
       fetchMenu();
     } catch (err) {
       console.error(err);
       alert("Error saving menu item");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -59,7 +63,7 @@ export default function AdminMenu() {
       name: item.name,
       price: item.price,
       category: item.category,
-      image: null,
+      image: item.image || "",
     });
   };
 
@@ -67,6 +71,7 @@ export default function AdminMenu() {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
       await API.delete(`/menu/${id}`);
+      alert("Menu item deleted successfully!");
       fetchMenu();
     } catch (err) {
       console.error(err);
@@ -75,84 +80,118 @@ export default function AdminMenu() {
   };
 
   return (
-    <div className="my-6">
-      <h2 className="text-2xl font-semibold mb-4">Manage Menu</h2>
-
+    <div className="space-y-6">
       {/* Add/Edit Form */}
-      <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md mb-6">
-        <h5 className="text-lg font-medium mb-3">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
           {editingItem ? "Edit Menu Item" : "Add New Menu Item"}
-        </h5>
-        <div className="grid gap-3">
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
-            placeholder="Name"
-            className="p-3 border rounded-lg"
+            placeholder="Item Name"
+            className="form-input"
             value={newItem.name}
             onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
           />
           <input
             type="number"
-            placeholder="Price"
-            className="p-3 border rounded-lg"
+            placeholder="Price (₹)"
+            className="form-input"
             value={newItem.price}
             onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
           />
-          <input
-            type="text"
-            placeholder="Category"
-            className="p-3 border rounded-lg"
+          <select
+            className="form-input"
             value={newItem.category}
             onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
-          />
+          >
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Beverages">Beverages</option>
+          </select>
           <input
-            type="file"
-            className="p-3 border rounded-lg"
-            onChange={(e) => setNewItem({ ...newItem, image: e.target.files[0] })}
+            type="url"
+            placeholder="Image URL"
+            className="form-input"
+            value={newItem.image}
+            onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
           />
-          <div className="flex space-x-3 mt-2">
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg" onClick={handleSave}>
-              {editingItem ? "Update Item" : "Add Item"}
+        </div>
+        <div className="flex space-x-3 mt-4">
+          <button 
+            className={`btn-primary ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? "Saving..." : editingItem ? "Update Item" : "Add Item"}
+          </button>
+          {editingItem && (
+            <button
+              className="btn-secondary"
+              onClick={() => {
+                setEditingItem(null);
+                setNewItem({ name: "", price: "", category: "Breakfast", image: "" });
+              }}
+            >
+              Cancel
             </button>
-            {editingItem && (
-              <button
-                className="px-4 py-2 bg-gray-400 text-white rounded-lg"
-                onClick={() => {
-                  setEditingItem(null);
-                  setNewItem({ name: "", price: "", category: "", image: null });
-                }}
-              >
-                Cancel
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Existing Menu */}
-      <h4 className="text-xl font-semibold mb-3">Existing Menu</h4>
-      {loading ? (
-        <p className="text-gray-500 animate-pulse">Loading menu...</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {menu.map((item) => (
-            <MenuCard key={item._id} item={item}>
-              <button
-                className="px-2 py-1 bg-yellow-400 text-white rounded"
-                onClick={() => handleEdit(item)}
-              >
-                Edit
-              </button>
-              <button
-                className="px-2 py-1 bg-red-500 text-white rounded"
-                onClick={() => handleDelete(item._id)}
-              >
-                Delete
-              </button>
-            </MenuCard>
-          ))}
-        </div>
-      )}
+      {/* Menu Items List */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          Menu Items ({menu.length})
+        </h3>
+        {loading ? (
+          <p className="text-gray-500 dark:text-gray-400 animate-pulse">Loading menu...</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Image</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {menu.map((item) => (
+                  <tr key={item._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-4 py-3">
+                      <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
+                    </td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">{item.name}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{item.category}</td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-semibold">₹{item.price}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex space-x-2">
+                        <button
+                          className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+                          onClick={() => handleEdit(item)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
+                          onClick={() => handleDelete(item._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -84,45 +84,21 @@ const subscribe = async (planId) => {
     const plan = plans.find((p) => p._id === planId);
     if (!plan) throw new Error("Plan not found");
 
-    // Make request to backend to create Razorpay order
+    // Make request to backend to subscribe
     const { data } = await API.post("/payments/create-order", {
-      planId: plan._id, // send correct plan ID
-      userId: user._id,  // send correct user ID
+      planId: plan._id,
+      userId: user._id,
     });
 
-    // Open Razorpay payment popup
-    const options = {
-      key: data.key, // Razorpay key returned from backend
-      amount: data.order.amount,
-      currency: data.order.currency,
-      name: "Canteen Subscription",
-      description: `Subscribe to ${plan.name}`,
-      order_id: data.order.id,
-      prefill: { name: user.name, email: user.email },
-      handler: async (response) => {
-        try {
-          // Verify payment
-          await API.post("/payments/verify", {
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-            planId: plan._id,
-            userId: user._id,
-          });
-          alert("Payment successful! Subscription updated.");
-        } catch (err) {
-          console.error("Payment verification error:", err);
-          alert("Payment verification failed.");
-        } finally {
-          setProcessingPlan(null);
-        }
-      },
-    };
-
-    new window.Razorpay(options).open();
+    if (data.success) {
+      alert(`Successfully subscribed to ${plan.name}!`);
+    } else {
+      throw new Error(data.message || "Subscription failed");
+    }
   } catch (err) {
-    console.error("Payment error:", err);
-    alert(err.response?.data?.message || err.message || "Payment failed. Try again.");
+    console.error("Subscription error:", err);
+    alert(err.response?.data?.message || err.message || "Subscription failed. Try again.");
+  } finally {
     setProcessingPlan(null);
   }
 };

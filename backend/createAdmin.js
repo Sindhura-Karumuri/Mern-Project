@@ -4,7 +4,7 @@ import User from "./models/User.js"; // default import
 import dotenv from "dotenv";
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/canteen";
+const MONGO_URI = process.env.ATLAS_URI || process.env.MONGO_URI || "mongodb://127.0.0.1:27017/mern_canteen";
 
 async function createAdmin() {
   await mongoose.connect(MONGO_URI);

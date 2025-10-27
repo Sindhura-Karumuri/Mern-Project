@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["student", "admin"], default: "student" },
+  subscription: { type: mongoose.Schema.Types.ObjectId, ref: "Plan", default: null },
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);

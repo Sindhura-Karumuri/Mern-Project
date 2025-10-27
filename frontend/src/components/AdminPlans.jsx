@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import API from "../api";
-import PlanCard from "./PlanCard";
 
 export default function AdminPlans() {
   const [plans, setPlans] = useState([]);
@@ -8,8 +7,8 @@ export default function AdminPlans() {
   const [newPlan, setNewPlan] = useState({
     name: "",
     price: "",
-    duration_in_days: "",
-    image: null,
+    duration: "",
+    image: "",
   });
   const [editingPlan, setEditingPlan] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -31,31 +30,28 @@ export default function AdminPlans() {
   }, []);
 
   const handleSave = async () => {
-    if (!newPlan.name || !newPlan.price || !newPlan.duration_in_days) {
-      return alert("Please fill all fields");
+    if (!newPlan.name || !newPlan.price || !newPlan.duration) {
+      return alert("Please fill all required fields");
     }
 
     try {
       setSaving(true);
-      const formData = new FormData();
-      formData.append("name", newPlan.name);
-      formData.append("price", newPlan.price);
-      formData.append("duration_in_days", newPlan.duration_in_days);
-      if (newPlan.image) formData.append("image", newPlan.image);
+      const planData = {
+        name: newPlan.name,
+        price: Number(newPlan.price),
+        duration: Number(newPlan.duration),
+        image: newPlan.image
+      };
 
       if (editingPlan) {
-        await API.put(`/plans/${editingPlan._id}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        alert("Plan updated successfully");
+        await API.put(`/plans/${editingPlan._id}`, planData);
+        alert("Plan updated successfully!");
       } else {
-        await API.post("/plans", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        alert("Plan added successfully");
+        await API.post("/plans", planData);
+        alert("Plan added successfully!");
       }
 
-      setNewPlan({ name: "", price: "", duration_in_days: "", image: null });
+      setNewPlan({ name: "", price: "", duration: "", image: "" });
       setEditingPlan(null);
       fetchPlans();
     } catch (err) {
@@ -71,8 +67,8 @@ export default function AdminPlans() {
     setNewPlan({
       name: plan.name,
       price: plan.price,
-      duration_in_days: plan.duration,
-      image: null, // allow new upload
+      duration: plan.duration,
+      image: plan.image || "",
     });
   };
 
@@ -80,6 +76,7 @@ export default function AdminPlans() {
     if (!window.confirm("Are you sure you want to delete this plan?")) return;
     try {
       await API.delete(`/plans/${id}`);
+      alert("Plan deleted successfully!");
       fetchPlans();
     } catch (err) {
       console.error(err);
@@ -87,116 +84,116 @@ export default function AdminPlans() {
     }
   };
 
-  const renderImagePreview = () => {
-    if (newPlan.image) {
-      return (
-        <img
-          src={URL.createObjectURL(newPlan.image)}
-          alt="Preview"
-          className="w-32 h-32 object-cover rounded-lg mb-2"
-        />
-      );
-    }
-    if (editingPlan?.image) {
-      return (
-        <img
-          src={`http://localhost:5000${editingPlan.image}`}
-          alt="Current"
-          className="w-32 h-32 object-cover rounded-lg mb-2"
-        />
-      );
-    }
-    return null;
-  };
-
   return (
-    <div className="my-6">
-      <h2 className="text-2xl font-semibold mb-4">Manage Plans</h2>
-
+    <div className="space-y-6">
       {/* Add/Edit Form */}
-      <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md mb-6">
-        <h5 className="text-lg font-medium mb-3">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
           {editingPlan ? "Edit Plan" : "Add New Plan"}
-        </h5>
-        <div className="grid gap-3">
-          {renderImagePreview()}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
-            placeholder="Name"
-            className="p-3 border rounded-lg"
+            placeholder="Plan Name"
+            className="form-input"
             value={newPlan.name}
             onChange={(e) => setNewPlan({ ...newPlan, name: e.target.value })}
           />
           <input
             type="number"
-            placeholder="Price"
-            className="p-3 border rounded-lg"
+            placeholder="Price (₹)"
+            className="form-input"
             value={newPlan.price}
             onChange={(e) => setNewPlan({ ...newPlan, price: e.target.value })}
           />
           <input
             type="number"
             placeholder="Duration (days)"
-            className="p-3 border rounded-lg"
-            value={newPlan.duration_in_days}
-            onChange={(e) =>
-              setNewPlan({ ...newPlan, duration_in_days: e.target.value })
-            }
+            className="form-input"
+            value={newPlan.duration}
+            onChange={(e) => setNewPlan({ ...newPlan, duration: e.target.value })}
           />
           <input
-            type="file"
-            className="p-3 border rounded-lg"
-            onChange={(e) => setNewPlan({ ...newPlan, image: e.target.files[0] })}
+            type="url"
+            placeholder="Image URL"
+            className="form-input"
+            value={newPlan.image}
+            onChange={(e) => setNewPlan({ ...newPlan, image: e.target.value })}
           />
-          <div className="flex space-x-3 mt-2">
+        </div>
+        <div className="flex space-x-3 mt-4">
+          <button 
+            className={`btn-primary ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? "Saving..." : editingPlan ? "Update Plan" : "Add Plan"}
+          </button>
+          {editingPlan && (
             <button
-              className={`px-4 py-2 rounded-lg text-white ${
-                saving ? "bg-gray-400" : "bg-blue-600"
-              }`}
-              onClick={handleSave}
-              disabled={saving}
+              className="btn-secondary"
+              onClick={() => {
+                setEditingPlan(null);
+                setNewPlan({ name: "", price: "", duration: "", image: "" });
+              }}
             >
-              {saving ? "Saving..." : editingPlan ? "Update Plan" : "Add Plan"}
+              Cancel
             </button>
-            {editingPlan && (
-              <button
-                className="px-4 py-2 bg-gray-400 text-white rounded-lg"
-                onClick={() => {
-                  setEditingPlan(null);
-                  setNewPlan({ name: "", price: "", duration_in_days: "", image: null });
-                }}
-              >
-                Cancel
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Existing Plans */}
-      <h4 className="text-xl font-semibold mb-3">Existing Plans</h4>
-      {loading ? (
-        <p className="text-gray-500 animate-pulse">Loading plans...</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {plans.map((plan) => (
-            <PlanCard key={plan._id} plan={plan}>
-              <button
-                className="px-2 py-1 bg-yellow-400 text-white rounded"
-                onClick={() => handleEdit(plan)}
-              >
-                Edit
-              </button>
-              <button
-                className="px-2 py-1 bg-red-500 text-white rounded"
-                onClick={() => handleDelete(plan._id)}
-              >
-                Delete
-              </button>
-            </PlanCard>
-          ))}
-        </div>
-      )}
+      {/* Plans List */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          Subscription Plans ({plans.length})
+        </h3>
+        {loading ? (
+          <p className="text-gray-500 dark:text-gray-400 animate-pulse">Loading plans...</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Image</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Duration</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {plans.map((plan) => (
+                  <tr key={plan._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-4 py-3">
+                      <img src={plan.image} alt={plan.name} className="w-12 h-12 object-cover rounded" />
+                    </td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">{plan.name}</td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-semibold">₹{plan.price}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{plan.duration} days</td>
+                    <td className="px-4 py-3">
+                      <div className="flex space-x-2">
+                        <button
+                          className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded transition"
+                          onClick={() => handleEdit(plan)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition"
+                          onClick={() => handleDelete(plan._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

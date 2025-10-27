@@ -94,40 +94,20 @@ export default function Home() {
         userId: user._id,
       });
 
-      const options = {
-        key: data.key || process.env.REACT_APP_RAZORPAY_KEY,
-        amount: data.amount,
-        currency: data.currency,
-        name: "Canteen Subscription",
-        description: `Subscribe to ${plan.name}`,
-        order_id: data.id,
-        prefill: { name: user.name, email: user.email },
-        handler: async (response) => {
-          try {
-            await API.post("/payments/verify", {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              planId,
-              userId: user._id,
-            });
-            alert("Payment successful! Subscription updated.");
-          } catch (err) {
-            console.error("Payment verification error:", err);
-            alert("Payment verification failed.");
-          } finally {
-            setProcessingPlan(null);
-          }
-        },
-      };
-
-      new window.Razorpay(options).open();
+      if (data.success) {
+        alert(`Successfully subscribed to ${plan.name}!`);
+      } else {
+        throw new Error(data.message || "Subscription failed");
+      }
     } catch (err) {
-      console.error("Payment error:", err);
-      alert("Payment failed. Try again.");
+      console.error("Subscription error:", err);
+      alert(err.response?.data?.message || err.message || "Subscription failed. Try again.");
+    } finally {
       setProcessingPlan(null);
     }
   };
+
+
 
   const Card = ({ children }) => <div className="card">{children}</div>;
 

@@ -2,6 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+}
+
+/* Custom Components */
+@layer components {
+  /* Navigation Links */
+  .nav-link {
+    @apply px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium;
+  }
+  
+  .mobile-nav-link {
+    @apply block px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200;
+  }
+  
+  /* Buttons */
+  .btn-primary {
+    @apply px-6 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 border-none cursor-pointer;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-2 bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 border-none cursor-pointer;
+  }
+  
+  .btn-success {
+    @apply px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 border-none cursor-pointer;
+  }
+  
+  .btn-danger {
+    @apply px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 border-none cursor-pointer;
+  }
+  
+  /* Theme Toggle */
+  .theme-toggle {
+    @apply p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 hover:shadow-lg border-none cursor-pointer;
+  }
+  
+  /* Form Inputs */
+  .form-input {
+    @apply w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200;
+  }
+  
+  /* Cards */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700;
+  }
+  
+  .card-hover {
+    @apply transform hover:-translate-y-2 hover:shadow-2xl;
+  }
+  
+  /* Footer Links */
+  .footer-link {
+    @apply block text-gray-300 hover:text-white transition-colors duration-200 cursor-pointer;
+  }
+  
+  /* Grid Layouts */
+  .grid-responsive {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+}
+
+/* Custom Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
 /* Smooth transitions for color changes */
 html {
   transition: background-color 0.3s, color 0.3s;
