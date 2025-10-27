@@ -10,27 +10,73 @@ export default function Home() {
 
   const [menu, setMenu] = useState([]);
   const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState({ menu: true, plans: true });
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState({ menu: true, plans: true, orders: true });
   const [processingPlan, setProcessingPlan] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
+      setError("");
       try {
-        const [menuRes, plansRes] = await Promise.all([
+        const [menuRes, plansRes, ordersRes] = await Promise.all([
           API.get("/menu"),
           API.get("/plans"),
+          user ? API.get("/orders/my") : Promise.resolve({ data: [] }),
         ]);
+
         setMenu(menuRes.data || []);
         setPlans(plansRes.data || []);
+        setOrders(ordersRes.data || []);
       } catch (err) {
-        console.error("Failed to load data:", err);
+        console.error("Fetch Error:", err);
+        setError("Failed to load data. Please try again.");
       } finally {
-        setLoading({ menu: false, plans: false });
+        setLoading({ menu: false, plans: false, orders: false });
       }
     };
     fetchData();
-  }, []);
+  }, [user]);
 
+  const getImageURL = (path) => {
+  if (!path) return "/default-image.png"; // fallback
+  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000"; // backend URL
+  // If path is absolute (starts with http) return it as is
+  if (path.startsWith("http")) return path;
+  // Otherwise, prepend backend URL
+  return `${baseURL}${path.startsWith("/") ? "" : "/"}${path}`;
+};
+
+
+  // Place Order
+  const placeOrder = async (menuItemId) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const menuItem = menu.find((m) => m._id === menuItemId);
+      if (!menuItem) throw new Error("Menu item not found");
+
+      const items = [{ name: menuItem.name, quantity: 1, price: menuItem.price }];
+      const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+      const { data } = await API.post("/orders", {
+        items,
+        totalAmount,
+        paymentStatus: "pending",
+      });
+
+      setOrders((prev) => [...prev, data]);
+      alert("Order placed successfully!");
+    } catch (err) {
+      console.error("Order Error:", err);
+      alert(err.response?.data?.message || err.message || "Error placing order");
+    }
+  };
+
+  // Subscribe to a Plan
   const subscribe = async (planId) => {
     if (!user) {
       navigate("/login");
@@ -67,7 +113,7 @@ export default function Home() {
             });
             alert("Payment successful! Subscription updated.");
           } catch (err) {
-            console.error("Verification error:", err);
+            console.error("Payment verification error:", err);
             alert("Payment verification failed.");
           } finally {
             setProcessingPlan(null);
@@ -83,12 +129,6 @@ export default function Home() {
     }
   };
 
-const getImageURL = (path) =>
-  path ? `http://localhost:5000${path.startsWith("/") ? path : "/" + path}` : "/default-image.png";
-
-
-
-
   const Card = ({ children }) => <div className="card">{children}</div>;
 
   const MenuCard = ({ item }) => (
@@ -103,6 +143,11 @@ const getImageURL = (path) =>
         <h5>{item.name}</h5>
         <p>{item.category}</p>
         <p className="price">₹{item.price}</p>
+        {user && (
+          <button className="btn" onClick={() => placeOrder(item._id)}>
+            Order
+          </button>
+        )}
       </div>
     </Card>
   );
@@ -139,6 +184,7 @@ const getImageURL = (path) =>
   return (
     <div className="container">
       <h1 className="section-title">🍴 Canteen Menu</h1>
+      {error && <p className="error-text">{error}</p>}
       {loading.menu ? (
         <p className="loading-text">Loading menu...</p>
       ) : menu.length ? (
@@ -162,6 +208,36 @@ const getImageURL = (path) =>
         </div>
       ) : (
         <p>No subscription plans available.</p>
+      )}
+
+      {user && (
+        <>
+          <h2 className="section-title">🛒 My Orders</h2>
+          {loading.orders ? (
+            <p className="loading-text">Loading orders...</p>
+          ) : orders.length ? (
+            <ul className="orders-list">
+              {orders.map((order) => (
+                <li key={order._id} className="flex flex-col gap-1">
+                  <span>
+                    <strong>Order ID:</strong> {order._id}
+                  </span>
+                  {order.items.map((item, idx) => (
+                    <span key={idx}>
+                      {item.name} x {item.quantity} - ₹{item.price * item.quantity}
+                    </span>
+                  ))}
+                  <span>
+                    <strong>Status:</strong> {order.status} - <strong>Total:</strong> ₹
+                    {order.totalAmount}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No orders yet.</p>
+          )}
+        </>
       )}
     </div>
   );

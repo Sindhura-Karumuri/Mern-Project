@@ -1,25 +1,23 @@
 import React from "react";
 
-export default function PlanCard({ plan, children }) {
+export default function PlanCard({ plan, onSubscribe, processing }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-shadow overflow-hidden flex flex-col h-full">
+    <div className="card">
       <img
-  src={
-    plan.image
-      ? `http://localhost:5000${plan.image.replace(/\\/g, "/")}`
-      : "/default-image.png"
-  }
-  alt={plan.name}
-  className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
-/>
-
-      <div className="p-4 flex flex-col flex-grow">
-        <h5 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
-          {plan.name}
-        </h5>
-        <p className="text-gray-700 dark:text-gray-200 font-medium mb-1">₹{plan.price}</p>
-        <p className="text-gray-500 dark:text-gray-400 mb-3">{plan.duration} days</p>
-        <div className="flex space-x-2 mt-auto">{children}</div>
+        src={plan.image || "/default-image.png"}
+        alt={plan.name}
+        className="card-img"
+        onError={(e) => (e.target.src = "/default-image.png")}
+      />
+      <div className="card-content">
+        <h5>{plan.name}</h5>
+        <p className="price">₹{plan.price}</p>
+        <p className="duration">{plan.duration_in_days || plan.duration} days</p>
+        {onSubscribe && (
+          <button className="btn" onClick={onSubscribe} disabled={processing}>
+            {processing ? "Processing..." : "Subscribe"}
+          </button>
+        )}
       </div>
     </div>
   );

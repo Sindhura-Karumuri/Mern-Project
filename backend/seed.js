@@ -3,12 +3,12 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 
-import authRoutes from "./routes/authRoutes.js";
-import menuRoutes from "./routes/menuRoutes.js";
-import orderRoutes from "./routes/orderRoutes.js";
-import paymentRoutes from "./routes/paymentRoutes.js";
-import planRoutes from "./routes/planRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
+import authRoutes from "./routes/auth.js";
+import menuRoutes from "./routes/menu.js";
+import orderRoutes from "./routes/orders.js";
+import paymentRoutes from "./routes/payments.js";
+import planRoutes from "./routes/plans.js";
+import adminRoutes from "./routes/admin.js";
 
 dotenv.config();
 const app = express();

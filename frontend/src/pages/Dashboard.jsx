@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../AuthContext';
-import AdminDashboard from './AdminDashboard';
-import MenuCard from '../components/MenuCard';
-import PlanCard from '../components/PlanCard';
-import API from '../api';
-import './Dashboard.css'; // import the CSS file
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../AuthContext";
+import AdminDashboard from "./AdminDashboard";
+import MenuCard from "../components/MenuCard";
+import PlanCard from "../components/PlanCard";
+import API from "../api";
+import "./Dashboard.css";
 
-const Loading = ({ message = 'Loading...' }) => (
+const Loading = ({ message = "Loading..." }) => (
   <p className="loading-text">{message}</p>
 );
 
@@ -16,96 +16,117 @@ function StudentDashboard({ user, logout }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState({ menu: true, plans: true, orders: true });
   const [processingPlan, setProcessingPlan] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
+  // Fetch menu, plans, and orders
   useEffect(() => {
+    if (!user) return; // Wait for user to load
+
     const fetchData = async () => {
-      setError('');
+      setError("");
+      setLoading({ menu: true, plans: true, orders: true });
       try {
         const [menuRes, plansRes, ordersRes] = await Promise.all([
-          API.get('/menu'),
-          API.get('/plans'),
-          API.get('/orders/my'),
+          API.get("/menu"),
+          API.get("/plans"),
+          API.get("/orders/my"),
         ]);
         setMenu(menuRes.data || []);
         setPlans(plansRes.data || []);
         setOrders(ordersRes.data || []);
       } catch (err) {
-        console.error(err);
-        setError('Failed to load data. Please try again.');
+        console.error("Fetch Error:", err);
+        setError("Failed to load data. Please try again.");
       } finally {
         setLoading({ menu: false, plans: false, orders: false });
       }
     };
+
     fetchData();
-  }, []);
+  }, [user]);
 
+  // Place an order
   const placeOrder = async (menuItemId) => {
+    if (!user) return alert("User not logged in. Please login first.");
+
+    try {
+      const menuItem = menu.find((m) => m._id === menuItemId);
+      if (!menuItem) throw new Error("Menu item not found");
+
+      const items = [{ name: menuItem.name, quantity: 1, price: menuItem.price }];
+      const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+      const { data } = await API.post("/orders", {
+        items,
+        totalAmount,
+        paymentStatus: "pending",
+      });
+
+      setOrders((prev) => [...prev, data]);
+      alert("Order placed successfully!");
+    } catch (err) {
+      console.error("Order Error:", err);
+      alert(err.response?.data?.message || err.message || "Error placing order");
+    }
+  };
+
+
+// Subscribe to a plan
+const subscribe = async (planId) => {
+  if (!user || !user._id) {
+    return alert("User not logged in. Please login to subscribe.");
+  }
+
   try {
-    // Find menu item by _id
-    const menuItem = menu.find((m) => m._id === menuItemId);
-    if (!menuItem) throw new Error("Menu item not found");
+    setProcessingPlan(planId);
 
-    const items = [
-      {
-        name: menuItem.name,
-        quantity: 1,
-        price: menuItem.price,
-      },
-    ];
+    // Find the plan object
+    const plan = plans.find((p) => p._id === planId);
+    if (!plan) throw new Error("Plan not found");
 
-    const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    const { data } = await API.post("/orders", {
-      items,
-      totalAmount,
-      paymentStatus: "pending",
+    // Make request to backend to create Razorpay order
+    const { data } = await API.post("/payments/create-order", {
+      planId: plan._id, // send correct plan ID
+      userId: user._id,  // send correct user ID
     });
 
-    setOrders((prev) => [...prev, data]);
-    alert("Order placed successfully!");
+    // Open Razorpay payment popup
+    const options = {
+      key: data.key, // Razorpay key returned from backend
+      amount: data.order.amount,
+      currency: data.order.currency,
+      name: "Canteen Subscription",
+      description: `Subscribe to ${plan.name}`,
+      order_id: data.order.id,
+      prefill: { name: user.name, email: user.email },
+      handler: async (response) => {
+        try {
+          // Verify payment
+          await API.post("/payments/verify", {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            planId: plan._id,
+            userId: user._id,
+          });
+          alert("Payment successful! Subscription updated.");
+        } catch (err) {
+          console.error("Payment verification error:", err);
+          alert("Payment verification failed.");
+        } finally {
+          setProcessingPlan(null);
+        }
+      },
+    };
+
+    new window.Razorpay(options).open();
   } catch (err) {
-    console.error(err);
-    alert(err.message || err.response?.data?.message || "Error placing order");
+    console.error("Payment error:", err);
+    alert(err.response?.data?.message || err.message || "Payment failed. Try again.");
+    setProcessingPlan(null);
   }
 };
 
-
-  const subscribe = async (planId) => {
-    try {
-      setProcessingPlan(planId);
-      const { data } = await API.post('/payments/create-order', { planId });
-      const options = {
-        key: data.key,
-        amount: data.order.amount,
-        currency: data.order.currency,
-        name: 'Canteen Subscription',
-        description: 'Plan purchase',
-        order_id: data.order.id,
-        prefill: { name: user.name, email: user.email },
-        handler: async (response) => {
-          try {
-            await API.post('/payments/verify', {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              paymentId: data.paymentId,
-            });
-            alert('Payment successful! Subscription updated.');
-          } catch {
-            alert('Payment verification failed.');
-          } finally {
-            setProcessingPlan(null);
-          }
-        },
-      };
-      new window.Razorpay(options).open();
-    } catch (err) {
-      console.error(err);
-      alert('Payment error. Try again.');
-      setProcessingPlan(null);
-    }
-  };
 
   return (
     <div className="dashboard-container">
@@ -113,8 +134,18 @@ function StudentDashboard({ user, logout }) {
       <div className="dashboard-header">
         <h1>Dashboard</h1>
         <div className="user-info">
-          <span>{user.name} ({user.role})</span>
-          <button className="logout-btn" onClick={logout}>Logout</button>
+          <span>
+            {user.name} ({user.role})
+          </span>
+          <button
+            className="logout-btn"
+            onClick={() => {
+              localStorage.removeItem("token");
+              logout();
+            }}
+          >
+            Logout
+          </button>
         </div>
       </div>
 
@@ -122,35 +153,32 @@ function StudentDashboard({ user, logout }) {
 
       {/* Menu Section */}
       <h2 className="section-title">Menu</h2>
-      {loading.menu ? <Loading /> : menu.length === 0 ? (
+      {loading.menu ? (
+        <Loading />
+      ) : menu.length === 0 ? (
         <p>No menu items available.</p>
       ) : (
         <div className="grid">
-          {menu.map(item => (
-  <MenuCard
-    key={item._id}               // <-- use _id
-    item={item}
-    onOrder={() => placeOrder(item._id)} // <-- pass _id to placeOrder
-    className="card"
-  />
-))}
-
+          {menu.map((item) => (
+            <MenuCard key={item._id} item={item} onOrder={() => placeOrder(item._id)} />
+          ))}
         </div>
       )}
 
       {/* Plans Section */}
       <h2 className="section-title">Plans</h2>
-      {loading.plans ? <Loading /> : plans.length === 0 ? (
+      {loading.plans ? (
+        <Loading />
+      ) : plans.length === 0 ? (
         <p>No plans available.</p>
       ) : (
         <div className="grid">
-          {plans.map(plan => (
+          {plans.map((plan) => (
             <PlanCard
-              key={plan.id}
+              key={plan._id}
               plan={plan}
-              onSubscribe={() => subscribe(plan.id)}
-              processing={processingPlan === plan.id}
-              className="card"
+              onSubscribe={() => subscribe(plan._id)}
+              processing={processingPlan === plan._id}
             />
           ))}
         </div>
@@ -158,26 +186,26 @@ function StudentDashboard({ user, logout }) {
 
       {/* Orders Section */}
       <h2 className="section-title">My Orders</h2>
-      {loading.orders ? <Loading /> : orders.length === 0 ? (
+      {loading.orders ? (
+        <Loading />
+      ) : orders.length === 0 ? (
         <p>No orders yet.</p>
       ) : (
         <ul className="orders-list">
-  {orders.map(order => (
-    <li key={order._id} className="flex flex-col gap-1">
-      <span><strong>Order ID:</strong> {order._id}</span>
-      {order.items.map((item, idx) => (
-        <span key={idx}>
-          {item.name} x {item.quantity} - ₹{item.price * item.quantity}
-        </span>
-      ))}
-      <span>
-        <strong>Status:</strong> {order.status} - <strong>Total:</strong> ₹{order.totalAmount}
-      </span>
-    </li>
-  ))}
-</ul>
-
-
+          {orders.map((order) => (
+            <li key={order._id}>
+              <strong>Order ID:</strong> {order._id}
+              <br />
+              {order.items.map((i, idx) => (
+                <span key={idx}>
+                  {i.name} x {i.quantity} - ₹{i.price * i.quantity}
+                  <br />
+                </span>
+              ))}
+              <strong>Status:</strong> {order.status} - <strong>Total:</strong> ₹{order.totalAmount}
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
@@ -186,9 +214,11 @@ function StudentDashboard({ user, logout }) {
 export default function Dashboard() {
   const { user, logout } = useContext(AuthContext);
 
-  if (!user) return <p className="loading-text">Loading user...</p>;
+  if (user === null) return <p className="loading-text">Loading user...</p>;
 
-  return user.role?.toLowerCase() === 'admin' 
-    ? <AdminDashboard /> 
-    : <StudentDashboard user={user} logout={logout} />;
+  return user.role?.toLowerCase() === "admin" ? (
+    <AdminDashboard />
+  ) : (
+    <StudentDashboard user={user} logout={logout} />
+  );
 }
