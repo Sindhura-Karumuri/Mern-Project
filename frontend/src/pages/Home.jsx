@@ -162,8 +162,27 @@ export default function Home() {
   );
 
   return (
-    <div className="container">
-      <h1 className="section-title">🍴 Canteen Menu</h1>
+    <div>
+      {/* Hero Banner */}
+      <div className="hero-banner">
+        <div className="hero-overlay">
+          <div className="hero-content">
+            <h1 className="hero-title">Welcome to AromaOfEmotions</h1>
+            <p className="hero-subtitle">
+              Experience fresh meals, quick orders, and seamless subscriptions — all in one place.
+              Stay energized and enjoy delicious food crafted with care every day!
+            </p>
+            {!user && (
+              <Link to="/login" className="hero-btn">
+                Get Started Today
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      <div className="container">
+        <h1 className="section-title">🍴 Our Menu</h1>
       {error && <p className="error-text">{error}</p>}
       {loading.menu ? (
         <p className="loading-text">Loading menu...</p>
@@ -219,6 +238,7 @@ export default function Home() {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }
