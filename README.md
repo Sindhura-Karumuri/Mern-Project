@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🍴 MERN Canteen Management System
 
 A full-stack **MERN application** for college canteen management, including authentication, role-based access, payments via Razorpay, and a modern admin dashboard.
@@ -80,3 +81,7 @@ frontend/         # React (Vite) frontend
 Ensure MongoDB is running locally or use a cloud MongoDB Atlas URL
 For image uploads, the uploads/ folder should exist and be writable
 TailwindCSS classes and Shadcn/UI components are used for a modern admin dashboard
+=======
+# Mern-Project
+Mern Project
+>>>>>>> e569e7d9b7d86e3a1f535c77b4e941d6b947b5ce
