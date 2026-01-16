@@ -62,14 +62,35 @@ export default function Home() {
       const items = [{ name: menuItem.name, quantity: 1, price: menuItem.price }];
       const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-      const { data } = await API.post("/orders", {
+      // Create Razorpay order
+      const { data: orderData } = await API.post("/payments/create-food-order", {
         items,
         totalAmount,
-        paymentStatus: "pending",
       });
 
-      setOrders((prev) => [...prev, data]);
-      alert("Order placed successfully!");
+      // Import Razorpay utility
+      const { initiateFoodPayment } = await import("../utils/razorpay");
+
+      // Initiate payment
+      await initiateFoodPayment(
+        orderData,
+        user,
+        async (paymentResponse) => {
+          // Payment successful, verify and create order
+          try {
+            const { data } = await API.post("/payments/verify-food-payment", paymentResponse);
+            setOrders((prev) => [...prev, data.order]);
+            alert("Payment successful! Order placed.");
+          } catch (err) {
+            console.error("Payment verification error:", err);
+            alert("Payment verification failed. Please contact support.");
+          }
+        },
+        (error) => {
+          console.error("Payment failed:", error);
+          alert(error || "Payment failed. Please try again.");
+        }
+      );
     } catch (err) {
       console.error("Order Error:", err);
       alert(err.response?.data?.message || err.message || "Error placing order");
@@ -89,20 +110,44 @@ export default function Home() {
       const plan = plans.find((p) => p._id === planId);
       if (!plan) throw new Error("Plan not found");
 
-      const { data } = await API.post("/payments/create-order", {
+      // Create Razorpay order
+      const { data: orderData } = await API.post("/payments/create-plan-order", {
         planId,
         userId: user._id,
       });
 
-      if (data.success) {
-        alert(`Successfully subscribed to ${plan.name}!`);
-      } else {
-        throw new Error(data.message || "Subscription failed");
-      }
+      // Import Razorpay utility
+      const { initiatePlanPayment } = await import("../utils/razorpay");
+
+      // Initiate payment
+      await initiatePlanPayment(
+        orderData,
+        user,
+        async (paymentResponse) => {
+          // Payment successful, verify subscription
+          try {
+            const { data } = await API.post("/payments/verify-plan-payment", {
+              ...paymentResponse,
+              userId: user._id,
+              planId,
+            });
+            alert(`Successfully subscribed to ${plan.name}!`);
+          } catch (err) {
+            console.error("Payment verification error:", err);
+            alert("Payment verification failed. Please contact support.");
+          } finally {
+            setProcessingPlan(null);
+          }
+        },
+        (error) => {
+          console.error("Payment failed:", error);
+          alert(error || "Payment failed. Please try again.");
+          setProcessingPlan(null);
+        }
+      );
     } catch (err) {
       console.error("Subscription error:", err);
       alert(err.response?.data?.message || err.message || "Subscription failed. Try again.");
-    } finally {
       setProcessingPlan(null);
     }
   };
