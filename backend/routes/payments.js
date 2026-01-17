@@ -1,9 +1,20 @@
 import express from "express";
-import { createOrder, verifyPayment } from "../controllers/paymentController.js";
+import {
+  createFoodOrder,
+  verifyFoodPayment,
+  createPlanOrder,
+  verifyPlanPayment,
+} from "../controllers/paymentController.js";
+import { authMiddleware } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/create-order", createOrder);
-router.post("/verify", verifyPayment);
+// Food order payment routes
+router.post("/create-food-order", authMiddleware, createFoodOrder);
+router.post("/verify-food-payment", authMiddleware, verifyFoodPayment);
+
+// Plan subscription payment routes
+router.post("/create-plan-order", createPlanOrder);
+router.post("/verify-plan-payment", verifyPlanPayment);
 
 export default router;
