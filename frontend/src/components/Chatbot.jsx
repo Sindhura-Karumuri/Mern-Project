@@ -18,7 +18,7 @@ const QUICK_REPLIES = [
   "About us ℹ️",
 ];
 
-function getBotReply(input, { menu, plans, orders, user, mySubscription }) {
+function getBotReply(input, { menu, plans, orders, ordersLoaded, user, mySubscription }) {
   const msg = input.toLowerCase().trim();
 
   // Greetings
@@ -42,8 +42,14 @@ function getBotReply(input, { menu, plans, orders, user, mySubscription }) {
   if (/my (plan|subscription)|my current plan|am i subscribed|subscribed plan|active (plan|subscription)|which plan|current subscription/.test(msg)) {
     if (!user) return "Please login to check your subscription. 🔐";
     if (mySubscription === undefined) return "Fetching your subscription details... ⏳ Please try again in a moment!";
-    if (!mySubscription) return "You don't have an active subscription yet. 💳\n\nCheck out our available plans below and subscribe to enjoy daily meals!";
-    return `✅ Your active subscription:\n\n📦 ${mySubscription.name}\n💰 ₹${mySubscription.price}\n📅 Duration: ${mySubscription.duration || mySubscription.duration_in_days} days\n\nVisit the Meal Plans section to manage your subscription!`;
+    // Try to enrich from plans list if subscription only has _id
+    let sub = mySubscription;
+    if (sub && !sub.name && plans.length) {
+      const subId = sub._id?.toString() || sub.toString();
+      sub = plans.find((p) => p._id?.toString() === subId) || sub;
+    }
+    if (!sub) return "You don't have an active subscription yet. 💳\n\nCheck out our available plans below and subscribe to enjoy daily meals!";
+    return `✅ Your active subscription:\n\n📦 ${sub.name || "Active Plan"}\n💰 ₹${sub.price || ""}\n📅 Duration: ${sub.duration || sub.duration_in_days || ""} days\n\nVisit the Meal Plans section to manage your subscription!`;
   }
 
   // Plans — show all available plans
@@ -56,6 +62,7 @@ function getBotReply(input, { menu, plans, orders, user, mySubscription }) {
   // Orders history
   if (/my order|order history|past order|previous order|track.*order|order.*status|what.*order|show.*order|purchase/.test(msg)) {
     if (!user) return "Please login to view your orders. 🔐 Head to the Login page to get started!";
+    if (!ordersLoaded) return "Fetching your orders... ⏳ Please try again in a moment!";
     if (!orders.length) return "You haven't placed any orders yet. 🧾 Browse our menu and place your first order!";
     const recent = orders.slice(-3).reverse();
     const list = recent.map((o) => `• ${o.items.map((i) => i.name).join(", ")} — ₹${o.totalAmount} (${o.status})`).join("\n");
@@ -165,7 +172,8 @@ export default function Chatbot() {
   const [menu, setMenu] = useState([]);
   const [plans, setPlans] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [mySubscription, setMySubscription] = useState(undefined); // undefined = not fetched yet
+  const [ordersLoaded, setOrdersLoaded] = useState(false);
+  const [mySubscription, setMySubscription] = useState(undefined);
   const bottomRef = useRef(null);
 
   // Fetch data for smart responses
@@ -173,9 +181,19 @@ export default function Chatbot() {
     API.get("/menu").then((r) => setMenu(r.data || [])).catch(() => {});
     API.get("/plans").then((r) => setPlans(r.data || [])).catch(() => {});
     if (user) {
-      API.get("/orders/my").then((r) => setOrders(r.data || [])).catch(() => {});
-      API.get("/plans/my").then((r) => setMySubscription(r.data)).catch(() => setMySubscription(null));
+      API.get("/orders/my")
+        .then((r) => { setOrders(r.data || []); setOrdersLoaded(true); })
+        .catch(() => { setOrders([]); setOrdersLoaded(true); });
+      API.get("/plans/my")
+        .then((r) => setMySubscription(r.data ?? null))
+        .catch(() => {
+          // Fallback: derive from user object already in AuthContext
+          const sub = user.subscription;
+          setMySubscription(sub ? { _id: sub._id || sub, name: sub.name, price: sub.price, duration: sub.duration } : null);
+        });
     } else {
+      setOrders([]);
+      setOrdersLoaded(false);
       setMySubscription(null);
     }
   }, [user]);
@@ -195,7 +213,7 @@ export default function Chatbot() {
     setTyping(true);
 
     setTimeout(() => {
-      const reply = getBotReply(userText, { menu, plans, orders, user, mySubscription });
+      const reply = getBotReply(userText, { menu, plans, orders, ordersLoaded, user, mySubscription });
       setMessages((prev) => [...prev, { role: BOT, text: reply, time: new Date() }]);
       setTyping(false);
     }, 700);
