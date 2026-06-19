@@ -23,15 +23,25 @@ const app = express();
 app.use(express.json());
 
 // ✅ Allow CORS for multiple frontends
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000",
+  "https://meal-plan-portal.vercel.app",
+  "https://mern-project-frontend-olt6.onrender.com",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173", // Vite dev server
-      "http://localhost:5174", // optional fallback if used
-      "http://localhost:3000", // CRA fallback
-      "https://meal-plan-portal.vercel.app", // deployed frontend
-      "https://mern-project-frontend-olt6.onrender.com", // deployed frontend on Render
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+      // Allow any vercel.app subdomain or any explicitly listed origin
+      if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin) || /\.onrender\.com$/.test(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error("CORS not allowed"));
+    },
     credentials: true,
   })
 );
