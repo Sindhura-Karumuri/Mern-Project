@@ -1,5 +1,6 @@
-import React, { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from 'react';
+import '../styles/Header.css';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa';
@@ -8,7 +9,17 @@ export default function Header() {
   const { user, logout } = useContext(AuthContext);
   const { darkMode, toggleDarkMode } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -16,100 +27,85 @@ export default function Header() {
     navigate('/');
   };
 
+  const isActive = (path) => location.pathname === path;
+
+  const navLinks = [
+    { to: '/', label: 'Home' },
+    ...(user ? [{ to: '/dashboard', label: 'Dashboard' }] : []),
+    { to: '/about', label: 'About' },
+    { to: '/contact', label: 'Contact' },
+    { to: '/faq', label: 'FAQ' },
+    { to: '/feedback', label: 'Feedback' },
+  ];
+
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-lg transition-colors duration-300">
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            🍴 Canteen
+    <>
+      <nav className={`header-nav${scrolled ? ' header-scrolled' : ''}`}>
+        <div className="header-inner">
+          {/* Logo */}
+          <Link to="/" className="header-logo">
+            <span className="logo-icon">🍴</span>
+            <span className="logo-text">AromaOfEmotions</span>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="nav-link">Home</Link>
-            {user && <Link to="/dashboard" className="nav-link">Dashboard</Link>}
-            <Link to="/about" className="nav-link">About</Link>
-            <Link to="/contact" className="nav-link">Contact</Link>
-            <Link to="/faq" className="nav-link">FAQ</Link>
-            <Link to="/feedback" className="nav-link">Feedback</Link>
-            
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-gray-700 dark:text-gray-300">
-                  Hi, {user.name}
-                </span>
-                <button onClick={handleLogout} className="btn-secondary">
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <Link to="/login" className="btn-primary">
-                Login
+          {/* Desktop Links */}
+          <div className="header-links">
+            {navLinks.map(({ to, label }) => (
+              <Link key={to} to={to} className={`header-link${isActive(to) ? ' header-link-active' : ''}`}>
+                {label}
               </Link>
+            ))}
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="header-actions">
+            {user ? (
+              <>
+                <span className="header-greeting">Hi, {user.name.split(' ')[0]} 👋</span>
+                <button onClick={handleLogout} className="header-btn header-btn-outline">Logout</button>
+              </>
+            ) : (
+              <Link to="/login" className="header-btn header-btn-filled">Login</Link>
             )}
-            
-            <button onClick={toggleDarkMode} className="theme-toggle">
-              {darkMode ? <FaSun /> : <FaMoon />}
+            <button onClick={toggleDarkMode} className="theme-toggle-btn" aria-label="Toggle theme">
+              {darkMode ? <FaSun size={16} /> : <FaMoon size={16} />}
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-2">
-            <button onClick={toggleDarkMode} className="theme-toggle">
-              {darkMode ? <FaSun /> : <FaMoon />}
+          {/* Mobile Controls */}
+          <div className="header-mobile-controls">
+            <button onClick={toggleDarkMode} className="theme-toggle-btn" aria-label="Toggle theme">
+              {darkMode ? <FaSun size={15} /> : <FaMoon size={15} />}
             </button>
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="text-gray-700 dark:text-gray-300"
-            >
-              {menuOpen ? <FaTimes /> : <FaBars />}
+            <button onClick={() => setMenuOpen(!menuOpen)} className="mobile-menu-btn" aria-label="Menu">
+              {menuOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {menuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col space-y-2 pt-4">
-              <Link to="/" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-                Home
+        {/* Mobile Drawer */}
+        <div className={`mobile-drawer${menuOpen ? ' mobile-drawer-open' : ''}`}>
+          <div className="mobile-drawer-inner">
+            {navLinks.map(({ to, label }) => (
+              <Link key={to} to={to} className={`mobile-link${isActive(to) ? ' mobile-link-active' : ''}`}>
+                {label}
               </Link>
-              {user && (
-                <Link to="/dashboard" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-                  Dashboard
-                </Link>
-              )}
-              <Link to="/about" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-                About
-              </Link>
-              <Link to="/contact" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-                Contact
-              </Link>
-              <Link to="/faq" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-                FAQ
-              </Link>
-              <Link to="/feedback" className="mobile-nav-link" onClick={() => setMenuOpen(false)}>
-                Feedback
-              </Link>
-              
+            ))}
+            <div className="mobile-drawer-footer">
               {user ? (
-                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-                  <span className="block text-gray-700 dark:text-gray-300 mb-2">
-                    Hi, {user.name}
-                  </span>
-                  <button onClick={handleLogout} className="btn-secondary w-full">
-                    Logout
-                  </button>
-                </div>
+                <>
+                  <span className="mobile-greeting">Hi, {user.name} 👋</span>
+                  <button onClick={handleLogout} className="header-btn header-btn-outline w-full">Logout</button>
+                </>
               ) : (
-                <Link to="/login" className="btn-primary w-full text-center" onClick={() => setMenuOpen(false)}>
-                  Login
-                </Link>
+                <Link to="/login" className="header-btn header-btn-filled" style={{ display: 'block', textAlign: 'center' }}>Login</Link>
               )}
             </div>
           </div>
-        )}
-      </div>
-    </nav>
+        </div>
+      </nav>
+      {/* Spacer so content doesn't hide behind fixed nav */}
+      <div className="header-spacer" />
+    </>
   );
 }

@@ -119,23 +119,21 @@ export const verifyFoodPayment = async (req, res) => {
 // Create Razorpay order for subscription plans
 export const createPlanOrder = async (req, res) => {
   try {
-    const { planId, userId } = req.body;
-    if (!planId || !userId)
-      return res.status(400).json({ message: "Plan ID and User ID required" });
+    const { planId } = req.body;
+    const userId = req.user._id;
+
+    if (!planId)
+      return res.status(400).json({ message: "Plan ID required" });
 
     const plan = await Plan.findById(planId);
     if (!plan) return res.status(404).json({ message: "Plan not found" });
 
     // Create Razorpay order
     const razorpayOrder = await razorpay.orders.create({
-      amount: plan.price * 100, // Convert to paise
+      amount: plan.price * 100,
       currency: "INR",
       receipt: `plan_${Date.now()}`,
-      notes: {
-        userId,
-        planId,
-        type: "subscription",
-      },
+      notes: { userId: userId.toString(), planId, type: "subscription" },
     });
 
     // Create payment record
@@ -169,10 +167,11 @@ export const verifyPlanPayment = async (req, res) => {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
-      userId,
       planId,
       paymentId,
     } = req.body;
+
+    const userId = req.user._id;
 
     // Verify signature
     const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -194,27 +193,17 @@ export const verifyPlanPayment = async (req, res) => {
     });
 
     // Save subscription to user
-    const user = await User.findById(userId);
-    if (user) {
-      user.subscription = planId;
-      await user.save();
-    }
+    await User.findByIdAndUpdate(userId, { subscription: planId });
 
-    // Track revenue for subscription
+    // Track revenue
     const plan = await Plan.findById(planId);
-    console.log(`📊 Tracking subscription revenue: ₹${plan.price} for plan ${plan.name}`);
     const Revenue = (await import("../models/Revenue.js")).default;
-    await Revenue.create({
-      type: "subscription",
-      amount: plan.price,
-      planId: plan._id,
-      userId: userId,
-    });
-    console.log(`✅ Subscription revenue tracked successfully`);
+    await Revenue.create({ type: "subscription", amount: plan.price, planId: plan._id, userId });
 
     res.status(200).json({
       success: true,
       message: "Payment verified and subscription activated successfully",
+      subscription: plan,
     });
   } catch (err) {
     console.error("Verify plan payment error:", err);

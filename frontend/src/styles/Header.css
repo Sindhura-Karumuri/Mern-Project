@@ -1,0 +1,244 @@
+/* ============================================================
+   HEADER — Glassmorphism Navbar
+   ============================================================ */
+
+.header-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(209, 213, 219, 0.5);
+  transition: box-shadow 0.3s, background 0.3s;
+}
+
+html.dark .header-nav {
+  background: rgba(15, 23, 42, 0.80);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.header-nav.header-scrolled {
+  box-shadow: 0 4px 24px rgba(99, 102, 241, 0.10);
+}
+
+html.dark .header-nav.header-scrolled {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* ---------- Logo ---------- */
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo-icon { font-size: 1.4rem; }
+
+.logo-text {
+  font-size: 1.05rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- Desktop Links ---------- */
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.header-link {
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.header-link:hover { color: var(--accent); background: var(--accent-light); }
+.header-link-active { color: var(--accent); background: var(--accent-light); font-weight: 600; }
+
+/* ---------- Actions ---------- */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.header-greeting {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.header-btn {
+  padding: 0.45rem 1.1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  border: none;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.header-btn-filled {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+}
+
+.header-btn-filled:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(99,102,241,0.4);
+  color: #fff;
+}
+
+.header-btn-outline {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+}
+
+.header-btn-outline:hover {
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+  border-color: rgba(239,68,68,0.4);
+}
+
+/* ---------- Theme Toggle ---------- */
+.theme-toggle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: rotate(20deg);
+}
+
+/* ---------- Mobile Controls ---------- */
+.header-mobile-controls {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mobile-menu-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 0.5rem;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mobile-menu-btn:hover { background: var(--accent-light); color: var(--accent); }
+
+/* ---------- Mobile Drawer ---------- */
+.mobile-drawer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+  border-top: 1px solid transparent;
+}
+
+.mobile-drawer-open {
+  max-height: 500px;
+  border-top-color: var(--border);
+}
+
+.mobile-drawer-inner {
+  padding: 1rem 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.mobile-link {
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+}
+
+.mobile-link:hover { color: var(--accent); background: var(--accent-light); }
+.mobile-link-active { color: var(--accent); background: var(--accent-light); font-weight: 600; }
+
+.mobile-drawer-footer {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-greeting { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+
+/* ---------- Spacer ---------- */
+.header-spacer { height: 64px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .header-links { display: none; }
+  .header-actions { display: none; }
+  .header-mobile-controls { display: flex; }
+  .header-inner { padding: 0 1.25rem; }
+}
+
+@media (max-width: 480px) {
+  .header-inner { padding: 0 1rem; }
+  .logo-text { font-size: 0.9rem; }
+}

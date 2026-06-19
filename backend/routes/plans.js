@@ -1,8 +1,10 @@
 import express from "express";
 import Plan from "../models/Plan.js";
+import { User } from "../models/index.js";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { authMiddleware } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -12,6 +14,17 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 const upload = multer({ storage });
+
+// GET current user's subscribed plan
+router.get("/my", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate("subscription");
+    res.json(user.subscription || null);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 // GET all plans
 router.get("/", async (req, res) => {

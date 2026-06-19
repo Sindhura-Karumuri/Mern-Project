@@ -2,6 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   GLOBAL CSS VARIABLES — Light & Dark
+   ============================================================ */
+:root {
+  --accent:       #6366f1;
+  --accent-dark:  #4f46e5;
+  --accent-light: #e0e7ff;
+  --text-primary: #111827;
+  --text-muted:   #6b7280;
+  --bg-page:      #f8fafc;
+  --bg-card:      rgba(255, 255, 255, 0.75);
+  --border:       rgba(209, 213, 219, 0.70);
+  --shadow-card:  0 8px 32px rgba(99, 102, 241, 0.10);
+  --shadow-hover: 0 20px 48px rgba(99, 102, 241, 0.18);
+  --glass-blur:   blur(16px);
+  --radius:       1rem;
+}
+
+html.dark {
+  --accent:       #818cf8;
+  --accent-dark:  #6366f1;
+  --accent-light: #1e1b4b;
+  --text-primary: #f1f5f9;
+  --text-muted:   #94a3b8;
+  --bg-page:      #0f172a;
+  --bg-card:      rgba(30, 41, 59, 0.70);
+  --border:       rgba(255, 255, 255, 0.10);
+  --shadow-card:  0 8px 32px rgba(0, 0, 0, 0.40);
+  --shadow-hover: 0 20px 48px rgba(0, 0, 0, 0.55);
+}
+
 /* Global Styles */
 * {
   margin: 0;
@@ -12,6 +43,9 @@
 body {
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  transition: background-color 0.4s, color 0.4s;
 }
 
 /* Custom Components */

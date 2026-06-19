@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import LoginImage from '../assets/login.jpg';
+import '../styles/Login.css';
 
 export default function Login() {
   const { login, signup } = useContext(AuthContext);
@@ -10,11 +11,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const submit = async (e) => {
     e.preventDefault();
@@ -25,12 +25,9 @@ export default function Login() {
     }
     try {
       setLoading(true);
-      if (isSignup) {
-        await signup({ name: form.name, email: form.email, password: form.password });
-      } else {
-        await login(form.email, form.password);
-      }
-      nav('/dashboard');
+      if (isSignup) await signup({ name: form.name, email: form.email, password: form.password });
+      else await login(form.email, form.password);
+      nav(redirectTo);
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong.');
     } finally {
@@ -39,139 +36,67 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        
-        {/* Left: Illustration */}
-        <div className="hidden lg:flex items-center justify-center">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-3xl blur-2xl opacity-20"></div>
-            <img
-              src={LoginImage}
-              alt="Login Illustration"
-              className="relative w-full max-w-lg rounded-3xl shadow-2xl animate-fade-in"
-            />
+    <div className="login-page">
+      {/* Left panel — image */}
+      <div className="login-left">
+        <img src={LoginImage} alt="Canteen" className="login-bg-img" />
+        <div className="login-left-overlay">
+          <div className="login-left-content">
+            <div className="login-brand">🍴 AromaOfEmotions</div>
+            <h2 className="login-left-title">Fuel your day with fresh campus meals</h2>
+            <p className="login-left-sub">Order food, subscribe to plans, and manage everything in one place.</p>
+            <div className="login-stats">
+              <div className="login-stat"><span className="stat-num">500+</span><span className="stat-label">Daily Orders</span></div>
+              <div className="login-stat"><span className="stat-num">50+</span><span className="stat-label">Menu Items</span></div>
+              <div className="login-stat"><span className="stat-num">4.9★</span><span className="stat-label">Rating</span></div>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Right: Login Form */}
-        <div className="w-full max-w-md mx-auto lg:mx-0">
-          <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-3xl p-8 lg:p-10 border border-gray-200 dark:border-gray-700">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <div className="text-4xl mb-4">🍴</div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                {isSignup ? 'Create Account' : 'Welcome Back'}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                {isSignup 
-                  ? 'Join our canteen community today' 
-                  : 'Sign in to access your dashboard'
-                }
-              </p>
-            </div>
+      {/* Right panel — form */}
+      <div className="login-right">
+        <div className="login-card">
+          <div className="login-card-header">
+            <div className="login-icon">🍴</div>
+            <h2 className="login-title">{isSignup ? 'Create Account' : 'Welcome Back'}</h2>
+            <p className="login-subtitle">
+              {isSignup ? 'Join our canteen community today' : 'Sign in to your dashboard'}
+            </p>
+          </div>
 
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6 text-center">
-                {error}
+          {error && <div className="login-error">{error}</div>}
+
+          <form onSubmit={submit} className="login-form">
+            {isSignup && (
+              <div className="form-group">
+                <label className="form-label">Full Name</label>
+                <input type="text" name="name" placeholder="John Doe" value={form.name} onChange={handleChange} disabled={loading} className="form-field" required />
               </div>
             )}
-
-            {/* Form */}
-            <form onSubmit={submit} className="space-y-6">
-              {isSignup && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Enter your full name"
-                    value={form.name}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className="form-input"
-                    required
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Enter your email"
-                  value={form.email}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className="form-input"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Enter your password"
-                  value={form.password}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className="form-input"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className={`w-full py-3 px-4 rounded-lg font-semibold text-white text-lg transition-all duration-300 ${
-                  loading
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-0.5 hover:shadow-lg'
-                }`}
-              >
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    {isSignup ? 'Creating Account...' : 'Signing In...'}
-                  </div>
-                ) : (
-                  isSignup ? 'Create Account' : 'Sign In'
-                )}
-              </button>
-            </form>
-
-            {/* Divider */}
-            <div className="my-8 flex items-center">
-              <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
-              <span className="px-4 text-sm text-gray-500 dark:text-gray-400">or</span>
-              <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <input type="email" name="email" placeholder="you@example.com" value={form.email} onChange={handleChange} disabled={loading} className="form-field" required />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Password</label>
+              <input type="password" name="password" placeholder="••••••••" value={form.password} onChange={handleChange} disabled={loading} className="form-field" required />
             </div>
 
-            {/* Toggle Form */}
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => setIsSignup(!isSignup)}
-                disabled={loading}
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors duration-200"
-              >
-                {isSignup 
-                  ? 'Already have an account? Sign In' 
-                  : "Don't have an account? Create one"
-                }
-              </button>
-            </div>
-          </div>
+            <button type="submit" disabled={loading} className="login-submit-btn">
+              {loading ? (
+                <span className="login-spinner">
+                  <span className="spinner-dot" /><span className="spinner-dot" /><span className="spinner-dot" />
+                </span>
+              ) : (isSignup ? 'Create Account' : 'Sign In')}
+            </button>
+          </form>
+
+          <div className="login-divider"><span>or</span></div>
+
+          <button type="button" onClick={() => { setIsSignup(!isSignup); setError(''); }} disabled={loading} className="login-toggle-btn">
+            {isSignup ? 'Already have an account? Sign In' : "Don't have an account? Create one"}
+          </button>
         </div>
       </div>
     </div>

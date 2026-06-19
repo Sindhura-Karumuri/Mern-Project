@@ -14,7 +14,7 @@ router.post("/create-food-order", authMiddleware, createFoodOrder);
 router.post("/verify-food-payment", authMiddleware, verifyFoodPayment);
 
 // Plan subscription payment routes
-router.post("/create-plan-order", createPlanOrder);
-router.post("/verify-plan-payment", verifyPlanPayment);
+router.post("/create-plan-order", authMiddleware, createPlanOrder);
+router.post("/verify-plan-payment", authMiddleware, verifyPlanPayment);
 
 export default router;

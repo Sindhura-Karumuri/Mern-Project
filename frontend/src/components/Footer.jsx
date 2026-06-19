@@ -1,51 +1,100 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import '../styles/Footer.css';
+
+const FacebookIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+  </svg>
+);
+
+const InstagramIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+    <circle cx="12" cy="12" r="4"/>
+    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+  </svg>
+);
+
+const TwitterIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M4 4l16 16M4 20L20 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+  </svg>
+);
 
 export default function Footer() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const el = document.getElementById(location.hash.slice(1));
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }, [location]);
+
   return (
-    <footer className="bg-gray-800 dark:bg-gray-900 text-white py-8 mt-12">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-xl font-bold mb-4 text-blue-400">🍴 Canteen</h3>
-            <p className="text-gray-300">
-              Your favorite campus dining experience with fresh meals and convenient meal plans.
+    <footer className="site-footer">
+      <div className="footer-inner">
+        <div className="footer-grid">
+
+          {/* Brand */}
+          <div className="footer-brand">
+            <Link to="/" className="footer-logo-link">
+              <div className="footer-logo">🍴 AromaOfEmotions</div>
+            </Link>
+            <p className="footer-tagline">
+              Fresh meals, seamless orders, and flexible plans — crafted for your campus life.
             </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
-            <div className="space-y-2">
-              <Link to="/" className="footer-link">Home</Link>
-              <Link to="/about" className="footer-link">About</Link>
-              <Link to="/contact" className="footer-link">Contact</Link>
-              <Link to="/faq" className="footer-link">FAQ</Link>
+            <div className="footer-socials">
+              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Facebook">
+                <FacebookIcon />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Instagram">
+                <InstagramIcon />
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Twitter / X">
+                <TwitterIcon />
+              </a>
             </div>
           </div>
-          
-          <div>
-            <h4 className="font-semibold mb-4">Services</h4>
-            <div className="space-y-2">
-              <span className="footer-link">Fresh Meals</span>
-              <span className="footer-link">Meal Plans</span>
-              <span className="footer-link">Online Ordering</span>
-              <span className="footer-link">Quick Delivery</span>
-            </div>
+
+          {/* Quick Links */}
+          <div className="footer-col">
+            <h4 className="footer-col-title">Quick Links</h4>
+            <Link to="/" className="footer-link">Home</Link>
+            <Link to="/about" className="footer-link">About</Link>
+            <Link to="/contact" className="footer-link">Contact</Link>
+            <Link to="/faq" className="footer-link">FAQ</Link>
+            <Link to="/feedback" className="footer-link">Feedback</Link>
           </div>
-          
-          <div>
-            <h4 className="font-semibold mb-4">Contact Info</h4>
-            <div className="space-y-2 text-gray-300">
-              <p>📧 info@canteen.com</p>
-              <p>📞 +1 (555) 123-4567</p>
-              <p>📍 Campus Building A</p>
-              <p>🕒 Mon-Fri: 7AM-8PM</p>
-            </div>
+
+          {/* Services — navigate to home sections */}
+          <div className="footer-col">
+            <h4 className="footer-col-title">Services</h4>
+            <Link to="/" className="footer-link">Fresh Meals</Link>
+            <Link to="/" className="footer-link">Meal Plans</Link>
+            <Link to="/dashboard#my-orders" className="footer-link">Online Ordering</Link>
+            <Link to="/faq" className="footer-link">Help & Support</Link>
           </div>
+
+          {/* Contact */}
+          <div className="footer-col">
+            <h4 className="footer-col-title">Contact</h4>
+            <a href="mailto:info@aromaofemotions.com" className="footer-contact-item footer-link">
+              ✉️ info@aromaofemotions.com
+            </a>
+            <a href="tel:+919876543210" className="footer-contact-item footer-link">
+              📞 +91 98765 43210
+            </a>
+            <span className="footer-contact-item">📍 Campus Block A, Ground Floor</span>
+            <span className="footer-contact-item">🕒 Mon–Fri: 7AM – 8PM</span>
+          </div>
+
         </div>
-        
-        <div className="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
-          <p>&copy; 2024 Canteen Management System. All rights reserved.</p>
+
+        <div className="footer-bottom">
+          <p>© {new Date().getFullYear()} AromaOfEmotions. All rights reserved.</p>
+          <p>Made with ❤️ for campus dining</p>
         </div>
       </div>
     </footer>

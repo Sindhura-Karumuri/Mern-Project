@@ -1,101 +1,54 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/Pages.css';
+
+const faqs = [
+  { q: 'How do I place an order?', a: 'Log in, browse our menu, and click "Order" on any item. Payment is handled securely via Razorpay.' },
+  { q: 'What payment methods do you accept?', a: 'All major credit/debit cards and UPI through Razorpay. Meal plan credits are used if you have an active subscription.' },
+  { q: 'How do meal plans work?', a: 'Meal plans are subscription packages for a fixed duration. Subscribe once and order meals using plan credits anytime during the period.' },
+  { q: 'Can I cancel or modify my order?', a: 'Orders can be changed within 15 minutes of placing. After that, the kitchen has begun preparation. Contact us immediately for help.' },
+  { q: 'What are your operating hours?', a: 'Mon–Fri: 7AM–8PM, Sat: 8AM–6PM, Sun: 9AM–5PM. Online ordering is available 24/7 for advance orders.' },
+  { q: 'Do you accommodate dietary restrictions?', a: 'Yes — vegetarian, vegan, and gluten-free options are available. Each item is labeled. Contact us for specific allergy queries.' },
+  { q: 'How long does preparation take?', a: 'Typically 10–15 minutes. Up to 20–25 minutes during peak hours. You receive a notification when ready.' },
+  { q: 'Can I get a refund for my meal plan?', a: 'Refunds available within 7 days of purchase if no meals consumed. After that, prorated based on unused meals.' },
+  { q: 'How do I report an issue with my order?', a: 'Use the Contact form or call us immediately. We resolve issues promptly and ensure your satisfaction.' },
+];
 
 export default function FAQ() {
-  const [openItems, setOpenItems] = useState({});
-
-  const toggleItem = (index) => {
-    setOpenItems(prev => ({
-      ...prev,
-      [index]: !prev[index]
-    }));
-  };
-
-  const faqs = [
-    {
-      question: "How do I place an order?",
-      answer: "You can place an order by logging into your account, browsing our menu, and clicking the 'Order' button on any item. You can also subscribe to meal plans for regular meals."
-    },
-    {
-      question: "What payment methods do you accept?",
-      answer: "We accept all major credit cards, debit cards, and digital payments through Razorpay. You can also use your meal plan credits if you have an active subscription."
-    },
-    {
-      question: "How do meal plans work?",
-      answer: "Meal plans are subscription-based services that give you access to meals for a specific duration. You can choose from various plans based on your needs and budget. Once subscribed, you can order meals using your plan credits."
-    },
-    {
-      question: "Can I cancel or modify my order?",
-      answer: "Orders can be cancelled or modified within 15 minutes of placing them. After that, the kitchen begins preparation and changes may not be possible. Contact us immediately if you need to make changes."
-    },
-    {
-      question: "What are your operating hours?",
-      answer: "We're open Monday-Friday from 7:00 AM to 8:00 PM, Saturday from 8:00 AM to 6:00 PM, and Sunday from 9:00 AM to 5:00 PM. Online ordering is available 24/7 for next-day delivery."
-    },
-    {
-      question: "Do you accommodate dietary restrictions?",
-      answer: "Yes! We offer vegetarian, vegan, gluten-free, and other dietary options. Each menu item is clearly labeled with dietary information. If you have specific allergies, please contact us directly."
-    },
-    {
-      question: "How long does food preparation take?",
-      answer: "Most orders are ready within 10-15 minutes during regular hours. During peak times (lunch and dinner), it may take up to 20-25 minutes. You'll receive a notification when your order is ready."
-    },
-    {
-      question: "Can I get a refund for my meal plan?",
-      answer: "Meal plan refunds are available within 7 days of purchase if no meals have been consumed. After that, refunds are prorated based on unused meals. Contact our support team for assistance."
-    },
-    {
-      question: "Is there a mobile app?",
-      answer: "Currently, we operate through our web platform which is mobile-friendly. A dedicated mobile app is in development and will be available soon with additional features."
-    },
-    {
-      question: "How do I report an issue with my order?",
-      answer: "If you have any issues with your order, please contact us immediately through the contact form or call our support line. We'll resolve the issue promptly and ensure your satisfaction."
-    }
-  ];
+  const [open, setOpen] = useState(null);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-          Frequently Asked Questions
-        </h1>
-        
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-              <button
-                onClick={() => toggleItem(index)}
-                className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-              >
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {faq.question}
-                </h3>
-                <span className="text-2xl text-blue-600 dark:text-blue-400 transform transition-transform duration-200">
-                  {openItems[index] ? '−' : '+'}
-                </span>
+    <div className="page-wrapper">
+      <div className="page-hero">
+        <div className="page-hero-content">
+          <span className="page-hero-tag">Help Center</span>
+          <h1 className="page-hero-title">Frequently Asked Questions</h1>
+          <p className="page-hero-sub">Everything you need to know about ordering, plans, and more.</p>
+        </div>
+      </div>
+
+      <div className="page-container">
+        <div className="faq-list">
+          {faqs.map((faq, i) => (
+            <div key={i} className={`faq-item glass-card${open === i ? ' faq-open' : ''}`}>
+              <button className="faq-question" onClick={() => setOpen(open === i ? null : i)}>
+                <span>{faq.q}</span>
+                <span className="faq-icon">{open === i ? '−' : '+'}</span>
               </button>
-              
-              {openItems[index] && (
-                <div className="px-6 pb-4 border-t border-gray-200 dark:border-gray-700">
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed pt-4">
-                    {faq.answer}
-                  </p>
-                </div>
+              {open === i && (
+                <div className="faq-answer">{faq.a}</div>
               )}
             </div>
           ))}
         </div>
-        
-        <div className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-lg p-8 text-center">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
-            Still have questions?
-          </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            Can't find the answer you're looking for? Our support team is here to help.
-          </p>
-          <a href="/contact" className="btn-primary inline-block">
-            Contact Support
-          </a>
+
+        <div className="glass-card faq-cta">
+          <div className="faq-cta-icon">💬</div>
+          <h2 className="faq-cta-title">Still have questions?</h2>
+          <p className="faq-cta-sub">Our support team is ready to help you anytime.</p>
+          <Link to="/contact" className="submit-btn" style={{ display: 'inline-block', textDecoration: 'none' }}>
+            Contact Support →
+          </Link>
         </div>
       </div>
     </div>

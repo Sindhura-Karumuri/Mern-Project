@@ -1,21 +1,36 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import API from './api';
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const raw = localStorage.getItem('user');
-    return raw ? JSON.parse(raw) : null;
-  });
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  // Rehydrate from localStorage on first load
+  useEffect(() => {
+    try {
+      const savedUser  = localStorage.getItem('user');
+      const savedToken = localStorage.getItem('token');
+      if (savedUser && savedToken) {
+        setUser(JSON.parse(savedUser));
+        setToken(savedToken);
+      }
+    } catch {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (user) localStorage.setItem('user', JSON.stringify(user));
-    else localStorage.removeItem('user');
+    if (user)  localStorage.setItem('user', JSON.stringify(user));
+    else       localStorage.removeItem('user');
     if (token) localStorage.setItem('token', token);
-    else localStorage.removeItem('token');
+    else       localStorage.removeItem('token');
   }, [user, token]);
 
   const login = async (email, password) => {
@@ -38,7 +53,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

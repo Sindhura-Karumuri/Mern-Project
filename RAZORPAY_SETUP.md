@@ -70,7 +70,7 @@ Use Razorpay test credentials (keys starting with `rzp_test_`)
 **Test Card Details:**
 - Card Number: `4111 1111 1111 1111`
 - CVV: Any 3 digits (e.g., `123`)
-- Expiry: Any future date (e.g., `12/25`)
+- Expiry: Any future date (e.g., `12/26`)
 - Name: Any name
 
 **Test UPI:**

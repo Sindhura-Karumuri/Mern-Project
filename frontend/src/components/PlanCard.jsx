@@ -1,8 +1,8 @@
 import React from "react";
 
-export default function PlanCard({ plan, onSubscribe, processing }) {
+export default function PlanCard({ plan, onSubscribe, processing, subscribed }) {
   return (
-    <div className="card">
+    <div className={`card${subscribed ? " card-subscribed" : ""}`}>
       <img
         src={plan.image || "/default-image.png"}
         alt={plan.name}
@@ -14,8 +14,12 @@ export default function PlanCard({ plan, onSubscribe, processing }) {
         <p className="price">₹{plan.price}</p>
         <p className="duration">{plan.duration_in_days || plan.duration} days</p>
         {onSubscribe && (
-          <button className="btn" onClick={onSubscribe} disabled={processing}>
-            {processing ? "Processing..." : "Subscribe"}
+          <button
+            className={`btn plan-btn${subscribed ? " btn-subscribed" : ""}`}
+            onClick={onSubscribe}
+            disabled={processing || subscribed}
+          >
+            {processing ? "Processing..." : subscribed ? "✅ Subscribed" : "Subscribe"}
           </button>
         )}
       </div>
