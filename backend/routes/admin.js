@@ -1,5 +1,6 @@
 import express from "express";
 import { User, Order, MenuItem } from "../models/index.js";
+import Payment from "../models/Payment.js";
 import Revenue from "../models/Revenue.js";
 import { authMiddleware, adminOnly } from "../middleware/auth.js";
 
@@ -23,6 +24,32 @@ router.get("/summary", authMiddleware, adminOnly, async (req, res) => {
   } catch (err) {
     console.error("Dashboard summary error:", err);
     res.status(500).json({ message: "Dashboard summary failed", error: err.message });
+  }
+});
+
+// GET all payments
+router.get("/payments", authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const payments = await Payment.find()
+      .populate("user", "name email")
+      .populate("plan", "name")
+      .sort({ createdAt: -1 });
+    res.status(200).json(payments);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch payments", error: err.message });
+  }
+});
+
+// GET all users with subscription details
+router.get("/users", authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const users = await User.find({ role: "student" })
+      .select("-password")
+      .populate("subscription", "name price duration")
+      .sort({ createdAt: -1 });
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch users", error: err.message });
   }
 });
 
