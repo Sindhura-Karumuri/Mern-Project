@@ -1,244 +1,277 @@
-# 🍴 AromaOfEmotions - MERN Canteen Management System
+# 🍴 AromaOfEmotions — Campus Canteen Management System
 
-A comprehensive **full-stack MERN application** for modern canteen management with beautiful UI, role-based access, payment integration, and advanced admin features.
+A full-stack **MERN** application for campus canteen management with Razorpay payments, role-based dashboards, subscription plans, an AI chatbot assistant, and live admin statistics.
 
-## 🌟 Live Demo
-- **Frontend**: https://mern-project-frontend-olt6.onrender.com
-- **Backend API**: https://mern-project-123-4mrk.onrender.com
+## 🌐 Live Demo
+
+| Service | URL |
+|---------|-----|
+| Frontend (Vercel) | https://canteen-nine-rouge.vercel.app |
+| Backend API (Render) | https://mern-project-123-4mrk.onrender.com |
 
 ---
 
-## ✨ Key Features
+## ✨ Features
 
-### 🎯 **User Features**
-- **Beautiful Hero Banner** with gradient animations
-- **40+ Menu Items** across 4 categories (Breakfast, Lunch, Snacks, Beverages)
-- **5 Subscription Plans** with flexible pricing
-- **One-Click Ordering** with real-time status tracking
-- **Plan Subscriptions** with instant activation
-- **Order History** with detailed tracking
-- **Responsive Design** - works on all devices
-- **Dark/Light Mode** toggle with persistent settings
+### 👤 Student
+- Browse menu items by category (Breakfast, Lunch, Snacks, Beverages)
+- Order food with secure **Razorpay** payment (cards, UPI, wallets, net banking)
+- Subscribe to weekly / monthly **meal plans** via Razorpay
+- View order history and active subscription on the **Profile** page
+- Edit display name from Profile page
+- Dark / Light mode toggle
+- **AromaBot** — AI chatbot for menu, plans, orders, timings, payment info and more
 
-### 🔐 **Authentication & Security**
-- **JWT-based Authentication** with secure token management
-- **Role-based Access Control** (Student/Admin)
-- **Protected Routes** with automatic redirects
-- **Password Encryption** using bcrypt
+### 🔐 Auth
+- JWT-based login / signup with bcrypt password hashing
+- Role-based access control (student / admin)
+- Protected routes with redirect on unauthenticated access
 
-### 👨‍💼 **Admin Dashboard**
-- **Revenue Tracking** - Real-time earnings from orders & subscriptions
-- **Menu Management** - Add, Edit, Delete menu items with images
-- **Plan Management** - Create and manage subscription plans
-- **Order Management** - Update order status, track completions
-- **User Analytics** - Total users, active subscriptions, daily orders
-- **Modern UI** with tables, forms, and responsive design
+### 🛠️ Admin Dashboard (tabbed)
 
-### 📱 **Additional Pages**
-- **About Page** - Company mission, vision, and story
-- **Contact Page** - Contact form with business information
-- **FAQ Page** - Expandable questions and answers
-- **Feedback Page** - Star rating system and feedback collection
+| Tab | What it does |
+|-----|-------------|
+| 📊 Summary | Stat cards + bar charts (orders by status, revenue breakdown) + donut chart (payment status) |
+| 🧾 Orders | View all orders, mark as Completed / Cancelled |
+| 🍽️ Menu | Add / Edit / Delete menu items with image URL |
+| 💳 Plans | Add / Edit / Delete subscription plans |
+| 👥 Users | View all students with their active subscription |
+| 💰 Payments | Full Razorpay payment history with type and status |
 
 ---
 
 ## 🚀 Tech Stack
 
-### 🧠 **Backend**
-- **Node.js** + **Express.js** - Server framework
-- **MongoDB** + **Mongoose** - Database and ODM
-- **JWT** - Authentication tokens
-- **bcrypt** - Password hashing
-- **CORS** - Cross-origin resource sharing
-- **Multer** - File upload handling
+### Backend
+- **Node.js** + **Express.js**
+- **MongoDB** + **Mongoose**
+- **Razorpay** — payment gateway with HMAC SHA256 signature verification
+- **JWT** + **bcryptjs** — auth & password hashing
+- **Multer** — image uploads
+- **CORS** — dynamic origin matching for Vercel & Render deployments
 
-### 💻 **Frontend**
-- **React 18** + **Vite** - Modern React setup
-- **React Router** - Client-side routing
-- **Axios** - HTTP client
-- **TailwindCSS** - Utility-first CSS framework
-- **React Icons** - Icon library
-- **Context API** - State management
-
-### 🎨 **UI/UX**
-- **Responsive Design** - Mobile-first approach
-- **Dark/Light Theme** - User preference toggle
-- **Gradient Animations** - Smooth transitions
-- **Modern Cards** - Glassmorphism effects
-- **Loading States** - Better user experience
+### Frontend
+- **React 18** + **Vite**
+- **React Router v6**
+- **Axios** with JWT interceptor
+- **TailwindCSS** + custom CSS variables (glassmorphism, dark mode)
+- **React Hot Toast** — notifications
+- **React Icons**
+- **Context API** — auth & theme state
 
 ---
 
-## ⚙️ Installation & Setup
+## 📁 Project Structure
 
-### 1️⃣ **Clone Repository**
+```
+Mern-Project/
+├── backend/
+│   ├── controllers/
+│   │   └── paymentController.js   # Razorpay order creation & verification
+│   ├── middleware/
+│   │   ├── auth.js                # JWT auth + admin guard
+│   │   └── upload.js              # Multer config
+│   ├── models/
+│   │   ├── User.js                # name, email, password, role, subscription
+│   │   ├── MenuItem.js            # name, price, category, image
+│   │   ├── Plan.js                # name, price, duration, image
+│   │   ├── Order.js               # user, items, totalAmount, status, paymentStatus
+│   │   ├── Payment.js             # Razorpay order/payment IDs, status
+│   │   └── Revenue.js             # type (order/subscription), amount, refs
+│   ├── routes/
+│   │   ├── auth.js                # login, signup, PUT /profile
+│   │   ├── menu.js                # CRUD menu items
+│   │   ├── plans.js               # CRUD plans + GET /my (user's active subscription)
+│   │   ├── orders.js              # user orders + admin status update
+│   │   ├── payments.js            # Razorpay food & plan payment flow
+│   │   └── admin.js               # summary stats, payments list, users list
+│   ├── createAdmin.js             # Seed admin user
+│   └── server.js
+├── frontend/
+│   └── src/
+│       ├── components/
+│       │   ├── Chatbot.jsx        # AromaBot floating assistant
+│       │   ├── AdminSummary.jsx   # Stat cards + SVG bar & donut charts
+│       │   ├── AdminOrders.jsx
+│       │   ├── AdminMenu.jsx
+│       │   ├── AdminPlans.jsx
+│       │   ├── AdminUsers.jsx
+│       │   ├── AdminPayments.jsx
+│       │   ├── Header.jsx
+│       │   ├── Footer.jsx
+│       │   ├── MenuCard.jsx
+│       │   └── PlanCard.jsx
+│       ├── pages/
+│       │   ├── Home.jsx           # Landing page (hero, stats bar, features grid)
+│       │   ├── Login.jsx          # Login / signup split-panel
+│       │   ├── Dashboard.jsx      # Student dashboard (menu, plans, orders)
+│       │   ├── AdminDashboard.jsx # Tabbed admin dashboard
+│       │   └── Profile.jsx        # User profile, subscription & order history
+│       ├── utils/
+│       │   └── razorpay.js        # Razorpay SDK loader & payment initiators
+│       ├── contexts/
+│       │   └── ThemeContext.jsx
+│       ├── AuthContext.jsx
+│       ├── api.js                 # Axios instance with JWT interceptor
+│       └── App.jsx
+└── README.md
+```
+
+---
+
+## ⚙️ Local Setup
+
+### 1. Clone
+
 ```bash
 git clone https://github.com/Sindhura-Karumuri/Mern-Project.git
 cd Mern-Project
 ```
 
-### 2️⃣ **Backend Setup**
+### 2. Backend
+
 ```bash
 cd backend
 npm install
 ```
 
-**Environment Variables** (`.env`):
+Create `backend/.env`:
+
 ```env
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/mern_canteen
-ATLAS_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_super_secret_jwt_key
+ATLAS_URI=your_mongodb_atlas_uri
+JWT_SECRET=your_jwt_secret
 RAZORPAY_KEY_ID=rzp_test_XXXXXXXXXXXX
 RAZORPAY_KEY_SECRET=XXXXXXXXXXXX
-FRONTEND_URL=http://localhost:5173
 ```
 
-**Start Backend**:
 ```bash
 npm start
 ```
 
-### 3️⃣ **Frontend Setup**
+### 3. Frontend
+
 ```bash
 cd ../frontend
 npm install
 ```
 
-**Environment Variables** (`.env`):
+Create `frontend/.env`:
+
 ```env
 VITE_API_URL=http://localhost:5000/api
 ```
 
-**Start Frontend**:
 ```bash
 npm run dev
 ```
 
-### 4️⃣ **Create Admin User**
+### 4. Create Admin User
+
 ```bash
 cd backend
 node createAdmin.js
 ```
 
-**Admin Credentials**:
-- **Email**: `superadmin@example.com`
-- **Password**: `SuperSecure123`
+**Admin credentials:**
+- Email: `superadmin@example.com`
+- Password: `SuperSecure123`
 
 ---
 
-## 📊 Database Schema
+## 💳 Payment Flow
 
-### **User Model**
-- `name`, `email`, `password`, `role`, `subscription`
+### Food Order
+1. Student clicks **Order** → `POST /api/payments/create-food-order`
+2. Razorpay modal opens
+3. On success → `POST /api/payments/verify-food-payment` (HMAC verified)
+4. Order created in DB with `paymentStatus: completed`
 
-### **MenuItem Model**
-- `name`, `price`, `category`, `image`, `available`
+### Subscription
+1. Student clicks **Subscribe** → `POST /api/payments/create-plan-order`
+2. Razorpay modal opens
+3. On success → `POST /api/payments/verify-plan-payment` (HMAC verified)
+4. `user.subscription` updated, revenue tracked
 
-### **Plan Model**
-- `name`, `price`, `duration`, `image`
-
-### **Order Model**
-- `user`, `items`, `totalAmount`, `status`, `paymentStatus`
-
-### **Revenue Model**
-- `type`, `amount`, `orderId`, `planId`, `userId`
+**Test card:** `4111 1111 1111 1111` · CVV: `123` · Expiry: any future date  
+**Test UPI:** `success@razorpay`
 
 ---
 
-## 🎯 API Endpoints
+## 🔌 API Reference
 
-### **Authentication**
-- `POST /api/auth/login` - User login
-- `POST /api/auth/signup` - User registration
+### Auth
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/auth/signup` | Public | Register |
+| POST | `/api/auth/login` | Public | Login |
+| PUT | `/api/auth/profile` | Student | Update display name |
 
-### **Menu**
-- `GET /api/menu` - Get all menu items
-- `POST /api/menu` - Add menu item (Admin)
-- `PUT /api/menu/:id` - Update menu item (Admin)
-- `DELETE /api/menu/:id` - Delete menu item (Admin)
+### Menu
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| GET | `/api/menu` | Public |
+| POST | `/api/menu` | Admin |
+| PUT | `/api/menu/:id` | Admin |
+| DELETE | `/api/menu/:id` | Admin |
 
-### **Plans**
-- `GET /api/plans` - Get all plans
-- `POST /api/plans` - Add plan (Admin)
-- `PUT /api/plans/:id` - Update plan (Admin)
-- `DELETE /api/plans/:id` - Delete plan (Admin)
+### Plans
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| GET | `/api/plans` | Public |
+| GET | `/api/plans/my` | Student — returns active subscription |
+| POST | `/api/plans` | Admin |
+| PUT | `/api/plans/:id` | Admin |
+| DELETE | `/api/plans/:id` | Admin |
 
-### **Orders**
-- `GET /api/orders/my` - Get user orders
-- `POST /api/orders` - Place new order
-- `PUT /api/orders/:id/status` - Update order status (Admin)
+### Orders
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| GET | `/api/orders/my` | Student |
+| GET | `/api/orders` | Admin |
+| PUT | `/api/orders/:id/status` | Admin |
 
-### **Payments**
-- `POST /api/payments/create-order` - Subscribe to plan
-- `POST /api/payments/verify` - Verify payment
+### Payments
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| POST | `/api/payments/create-food-order` | Student |
+| POST | `/api/payments/verify-food-payment` | Student |
+| POST | `/api/payments/create-plan-order` | Student |
+| POST | `/api/payments/verify-plan-payment` | Student |
 
-### **Admin**
-- `GET /api/admin/summary` - Dashboard analytics
+### Admin
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/admin/summary` | Stats (users, subscriptions, orders, revenue, menu count) |
+| GET | `/api/admin/payments` | All payment records with user & plan info |
+| GET | `/api/admin/users` | All students with populated subscription |
 
 ---
 
 ## 🌐 Deployment
 
-### **Backend** (Render)
-- Build Command: `npm install`
-- Start Command: `npm start`
-- Environment: Node.js
+### Backend — Render
+- **Build command:** `npm install`
+- **Start command:** `npm start`
+- Add all `.env` variables under Render → Environment
 
-### **Frontend** (Render/Vercel)
-- Build Command: `npm install && npm run build`
-- Publish Directory: `dist`
-- Environment: Node.js
+### Frontend — Vercel
+- **Framework preset:** Vite
+- **Build command:** `npm run build`
+- **Output directory:** `dist`
+- Add environment variable: `VITE_API_URL=https://mern-project-123-4mrk.onrender.com/api`
 
----
-
-## 📱 Screenshots
-
-### **Hero Banner**
-- Stunning gradient overlay with food background
-- Animated text and call-to-action button
-- Fully responsive design
-
-### **Menu & Plans**
-- 40+ diverse food items with images
-- 5 subscription plans with different durations
-- Easy ordering and subscription process
-
-### **Admin Dashboard**
-- Revenue tracking with real-time updates
-- Complete CRUD operations for menu and plans
-- Order management with status updates
-- User analytics and insights
+> CORS is configured to dynamically allow all `*.vercel.app` and `*.onrender.com` subdomains — no hardcoded URLs needed.
 
 ---
 
-## 🤝 Contributing
+## 👩‍💻 Developer
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
+**Sindhura Karumuri**  
+GitHub: [@Sindhura-Karumuri](https://github.com/Sindhura-Karumuri)
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License.
-
----
-
-## 👨‍💻 Developer
-
-**Sindhura Karumuri**
-- GitHub: [@Sindhura-Karumuri](https://github.com/Sindhura-Karumuri)
-- Project: [AromaOfEmotions](https://github.com/Sindhura-Karumuri/Mern-Project)
-
----
-
-## 🙏 Acknowledgments
-
-- **Unsplash** for beautiful food images
-- **TailwindCSS** for amazing utility classes
-- **React Community** for excellent documentation
-- **MongoDB** for flexible database solution
+MIT
