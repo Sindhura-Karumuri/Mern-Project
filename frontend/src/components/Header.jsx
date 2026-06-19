@@ -21,34 +21,26 @@ export default function Header() {
 
   useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    logout();
-    navigate('/');
-  };
-
+  const handleLogout = () => { logout(); navigate('/'); };
   const isActive = (path) => location.pathname === path;
 
   const navLinks = [
-    { to: '/', label: 'Home' },
-    ...(user ? [{ to: '/dashboard', label: 'Dashboard' }] : []),
-    { to: '/about', label: 'About' },
-    { to: '/contact', label: 'Contact' },
-    { to: '/faq', label: 'FAQ' },
-    { to: '/feedback', label: 'Feedback' },
+    { to: '/',          label: 'Home' },
+    ...(user ? [
+      { to: '/dashboard', label: 'Dashboard' },
+      { to: '/profile',   label: 'Profile' },
+    ] : []),
   ];
 
   return (
     <>
       <nav className={`header-nav${scrolled ? ' header-scrolled' : ''}`}>
         <div className="header-inner">
-          {/* Logo */}
           <Link to="/" className="header-logo">
             <span className="logo-icon">🍴</span>
             <span className="logo-text">AromaOfEmotions</span>
           </Link>
 
-          {/* Desktop Links */}
           <div className="header-links">
             {navLinks.map(({ to, label }) => (
               <Link key={to} to={to} className={`header-link${isActive(to) ? ' header-link-active' : ''}`}>
@@ -57,7 +49,6 @@ export default function Header() {
             ))}
           </div>
 
-          {/* Desktop Actions */}
           <div className="header-actions">
             {user ? (
               <>
@@ -72,7 +63,6 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Mobile Controls */}
           <div className="header-mobile-controls">
             <button onClick={toggleDarkMode} className="theme-toggle-btn" aria-label="Toggle theme">
               {darkMode ? <FaSun size={15} /> : <FaMoon size={15} />}
@@ -83,7 +73,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Drawer */}
         <div className={`mobile-drawer${menuOpen ? ' mobile-drawer-open' : ''}`}>
           <div className="mobile-drawer-inner">
             {navLinks.map(({ to, label }) => (
@@ -104,7 +93,6 @@ export default function Header() {
           </div>
         </div>
       </nav>
-      {/* Spacer so content doesn't hide behind fixed nav */}
       <div className="header-spacer" />
     </>
   );
